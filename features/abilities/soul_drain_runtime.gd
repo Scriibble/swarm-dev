@@ -17,10 +17,21 @@ func tick(delta: float) -> void:
 	beam.points = PackedVector2Array([caster.global_position, target.global_position])
 	beam.width = 8.0
 	beam.default_color = Color("ff385f")
+	beam.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	beam.end_cap_mode = Line2D.LINE_CAP_ROUND
 	beam.z_index = 8
 	caster.get_tree().current_scene.add_child(beam)
+	var core_line := Line2D.new()
+	core_line.points = PackedVector2Array([caster.global_position, target.global_position])
+	core_line.width = 2.0
+	core_line.default_color = Color("ffd1d9")
+	core_line.z_index = 9
+	caster.get_tree().current_scene.add_child(core_line)
 	var tween := beam.create_tween()
 	tween.tween_property(beam, "modulate:a", 0.0, 0.25)
 	tween.tween_callback(beam.queue_free)
+	var core_tween := core_line.create_tween()
+	core_tween.tween_property(core_line, "modulate:a", 0.0, 0.25)
+	core_tween.tween_callback(core_line.queue_free)
 	cooldown = scaled_cooldown()
 	EventBus.ability_activated.emit(data.id, caster.global_position)

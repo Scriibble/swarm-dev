@@ -1,5 +1,5 @@
 class_name AbilityRuntime
-extends Node
+extends Node2D
 
 var caster: CharacterBody2D
 var data: AbilityData

@@ -45,23 +45,53 @@ func generate(seed_value: int, parent: Node2D, core_position: Vector2) -> void:
 	grid.update()
 
 func direction_to_target(from_position: Vector2, target_position: Vector2) -> Vector2:
-	var from_cell := _world_to_cell(from_position)
-	var target_cell := _world_to_cell(target_position)
+	var from_cell := _nearest_walkable_cell(_world_to_cell(from_position))
+	var target_cell := _nearest_walkable_cell(_world_to_cell(target_position))
 	if not grid.is_in_boundsv(from_cell) or not grid.is_in_boundsv(target_cell):
 		return from_position.direction_to(target_position)
 	var path := grid.get_id_path(from_cell, target_cell, true)
 	if path.size() >= 2:
 		var next_cell: Vector2i = path[1]
-		var next_position := WORLD_ORIGIN + Vector2(next_cell * CELL_SIZE) + Vector2.ONE * CELL_SIZE * 0.5
-		return from_position.direction_to(next_position)
-	return from_position.direction_to(target_position)
+		if not grid.is_point_solid(next_cell):
+			return from_position.direction_to(_cell_center(next_cell))
+	return _fallback_direction(from_position, target_position, from_cell)
 
 func _world_to_cell(world_position: Vector2) -> Vector2i:
 	return Vector2i(floor((world_position.x - WORLD_ORIGIN.x - CELL_SIZE * 0.5) / CELL_SIZE), floor((world_position.y - WORLD_ORIGIN.y - CELL_SIZE * 0.5) / CELL_SIZE))
 
+func _cell_center(cell: Vector2i) -> Vector2:
+	return WORLD_ORIGIN + Vector2(cell * CELL_SIZE) + Vector2.ONE * CELL_SIZE * 0.5
+
+func _nearest_walkable_cell(cell: Vector2i) -> Vector2i:
+	if grid.is_in_boundsv(cell) and not grid.is_point_solid(cell):
+		return cell
+	for radius in range(1, 4):
+		for y in range(-radius, radius + 1):
+			for x in range(-radius, radius + 1):
+				var candidate := cell + Vector2i(x, y)
+				if grid.is_in_boundsv(candidate) and not grid.is_point_solid(candidate):
+					return candidate
+	return cell
+
+func _fallback_direction(from_position: Vector2, target_position: Vector2, from_cell: Vector2i) -> Vector2:
+	var best_direction := from_position.direction_to(target_position)
+	var best_score := INF
+	var target_direction := from_position.direction_to(target_position)
+	for offset in [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]:
+		var candidate: Vector2i = from_cell + Vector2i(offset)
+		if not grid.is_in_boundsv(candidate) or grid.is_point_solid(candidate):
+			continue
+		var candidate_direction := from_position.direction_to(_cell_center(candidate))
+		var score := _cell_center(candidate).distance_squared_to(target_position) - candidate_direction.dot(target_direction) * CELL_SIZE * 8.0
+		if score < best_score:
+			best_score = score
+			best_direction = candidate_direction
+	return best_direction
+
 func _add_obstacle(parent: Node2D, center: Vector2) -> void:
 	var body := StaticBody2D.new()
 	body.name = "GeneratedObstacle"
+	body.add_to_group("arena_obstacle")
 	# Obstacles use their own layer so the player never gets blocked by an
 	# enemy body that happens to be standing nearby.
 	body.collision_layer = 16
@@ -70,7 +100,7 @@ func _add_obstacle(parent: Node2D, center: Vector2) -> void:
 	body.z_index = 2
 	var shape := CollisionShape2D.new()
 	var rectangle := RectangleShape2D.new()
-	rectangle.size = Vector2(40, 40)
+	rectangle.size = Vector2(32, 32)
 	shape.shape = rectangle
 	body.add_child(shape)
 	var visual := Polygon2D.new()

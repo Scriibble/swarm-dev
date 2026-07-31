@@ -26,9 +26,12 @@ func tick(delta: float) -> void:
 
 func _spawn_arc(from_point: Vector2, to_point: Vector2) -> void:
 	var arc := Line2D.new()
-	arc.points = PackedVector2Array([from_point, to_point])
+	var midpoint := from_point.lerp(to_point, 0.5)
+	var perpendicular := from_point.direction_to(to_point).orthogonal() * (18.0 if evolved else 11.0)
+	arc.points = PackedVector2Array([from_point, midpoint + perpendicular, to_point])
 	arc.width = 5.0 if evolved else 3.0
 	arc.default_color = Color("b968ff") if evolved else Color("7b5cff")
+	arc.joint_mode = Line2D.LINE_JOINT_SHARP
 	arc.z_index = 8
 	caster.get_tree().current_scene.add_child(arc)
 	var tween := arc.create_tween()

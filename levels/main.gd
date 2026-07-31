@@ -10,13 +10,12 @@ const WALLS_FLOOR: Texture2D = preload("res://tileset/free-2d-top-down-pixel-dun
 const ARENA_GENERATOR_SCRIPT = preload("res://features/arena/arena_generator.gd")
 const HAZARD_SCENE: PackedScene = preload("res://features/arena/hazard.tscn")
 const FEEDBACK_SCRIPT = preload("res://features/feedback/combat_feedback.gd")
+const MAX_ACTIVE_ENEMIES := 60
 
 var player: CharacterBody2D
 var core: StaticBody2D
 var arena_generator: ArenaGenerator
 var spawn_timer: float = 1.0
-var pulse_timer: float = 3.0
-var orbit_timer: float = 1.0
 var rng := RandomNumberGenerator.new()
 var hud: CanvasLayer
 var overlay: Control
@@ -30,7 +29,6 @@ var upgrade_panel: PanelContainer
 var upgrade_list: VBoxContainer
 var reward_text: String = ""
 var feedback: CombatFeedback
-var hazard_timer: float = 2.0
 
 func _ready() -> void:
 	rng.seed = 92177
@@ -52,21 +50,9 @@ func _process(delta: float) -> void:
 	if GameManager.run_state == GameManager.RunState.PLAYING:
 		GameManager.tick_run(delta)
 		spawn_timer -= delta
-		pulse_timer -= delta
-		orbit_timer -= delta
-		hazard_timer -= delta
 		if spawn_timer <= 0.0:
 			_spawn_wave_group()
-			spawn_timer = maxf(0.8, 4.5 - GameManager.elapsed_time * 0.004)
-		if pulse_timer <= 0.0:
-			_core_pulse()
-			pulse_timer = 3.0
-		if orbit_timer <= 0.0:
-			_orbit_attack()
-			orbit_timer = 1.15
-		if hazard_timer <= 0.0:
-			_area_hazard_attack()
-			hazard_timer = 4.0
+			spawn_timer = maxf(1.0, 6.5 - GameManager.elapsed_time * 0.007)
 		if GameManager.elapsed_time >= 600.0:
 			GameManager.finish_run(true)
 	_update_hud()
@@ -83,6 +69,8 @@ func _build_world() -> void:
 		if child != hud and child != feedback:
 			child.queue_free()
 	core = CORE_SCENE.instantiate()
+	core.max_health = GameManager.core_max_health
+	core.damage_multiplier = float(GameManager.demon_modifiers.get("core_damage_multiplier", core.damage_multiplier))
 	core.position = Vector2(720, 470)
 	add_child(core)
 	core.core_destroyed.connect(func() -> void: GameManager.finish_run(false))
@@ -98,9 +86,13 @@ func _build_world() -> void:
 	player.health_changed.connect(func(_current: int, _maximum: int) -> void: _update_hud())
 
 func _spawn_wave_group() -> void:
+	if get_tree().get_nodes_in_group("enemies").size() >= MAX_ACTIVE_ENEMIES:
+		return
 	GameManager.wave_index = int(GameManager.elapsed_time / 20.0) + 1
-	var count := mini(3 + GameManager.wave_index, 16)
+	var count := mini(2 + GameManager.wave_index, 12)
 	if GameManager.elapsed_time >= 540.0:
+		if GameManager.champion_time < 0.0:
+			GameManager.champion_time = GameManager.elapsed_time
 		count = 1
 	for i in count:
 		var data := _make_enemy_data(i % 2 == 1)
@@ -133,51 +125,6 @@ func _make_enemy_data(is_orc: bool) -> EnemyData:
 	data.scale = 0.68
 	return data
 
-func _core_pulse() -> void:
-	if core == null or not is_instance_valid(core):
-		return
-	if player == null or not is_instance_valid(player) or not player.has_ability(&"core_pulse"):
-		return
-	var damage: int = player.core_pulse_damage + GameManager.level * 2
-	damage = int(round(float(damage) * float(GameManager.demon_modifiers.get("core_effectiveness", 1.0))))
-	for enemy in get_tree().get_nodes_in_group("enemies"):
-		if enemy.global_position.distance_to(core.global_position) <= 170.0:
-			enemy.take_damage(damage)
-
-func _orbit_attack() -> void:
-	if player == null or not is_instance_valid(player):
-		return
-	if not player.has_ability(&"blood_orbit"):
-		return
-	var nearest: Node2D
-	var nearest_distance: float = player.attack_range
-	for enemy in get_tree().get_nodes_in_group("enemies"):
-		var distance: float = player.global_position.distance_to(enemy.global_position)
-		if distance < nearest_distance:
-			nearest = enemy
-			nearest_distance = distance
-	if nearest:
-		var damage: int = player.orbit_damage + GameManager.level
-		if GameManager.active_demon_id == &"demon_harbinger" and player.global_position.distance_to(nearest.global_position) < 180.0:
-			damage = int(round(float(damage) * (1.0 + float(GameManager.demon_modifiers.get("close_damage", 0.0)))))
-		nearest.take_damage(damage)
-
-func _area_hazard_attack() -> void:
-	if player == null or not is_instance_valid(player) or not player.has_ability(&"area_hazard"):
-		return
-	var target := core.global_position
-	var nearest_distance := 999999.0
-	for enemy in get_tree().get_nodes_in_group("enemies"):
-		var distance: float = enemy.global_position.distance_to(core.global_position)
-		if distance < nearest_distance and distance < 300.0:
-			nearest_distance = distance
-			target = enemy.global_position
-	var hazard := HAZARD_SCENE.instantiate()
-	hazard.position = target
-	hazard.damage = 12 + GameManager.level * 2
-	hazard.lifetime = 3.0
-	add_child(hazard)
-
 func _on_run_started() -> void:
 	_build_world()
 	overlay.visible = false
@@ -187,9 +134,9 @@ func _on_run_started() -> void:
 func _on_run_ended(victory: bool) -> void:
 	set_process(false)
 	overlay.visible = true
-	status_label.text = ("HELLS DEFENDED" if victory else "THE HELLS HAVE FALLEN") + "\n" + reward_text
+	status_label.text = ("HELLS DEFENDED" if victory else "THE HELLS HAVE FALLEN") + "\n" + reward_text + "\n" + GameManager.last_run_summary
 	status_label.modulate = Color("ffb52e") if victory else Color("ff5b70")
-	$HUD/Overlay/Center/StartButton.text = "RUN AGAIN"
+	$HUD/Overlay/Center/StartButton.text = "RETURN TO STRONGHOLD"
 
 func _on_run_paused(is_paused: bool) -> void:
 	if is_paused:
@@ -328,6 +275,9 @@ func _build_hud() -> void:
 func _start_button_pressed() -> void:
 	if GameManager.run_state == GameManager.RunState.PAUSED:
 		GameManager.set_paused(false)
+		return
+	if GameManager.run_state in [GameManager.RunState.VICTORY, GameManager.RunState.DEFEAT]:
+		get_tree().change_scene_to_file("res://levels/stronghold.tscn")
 		return
 	GameManager.start_run()
 

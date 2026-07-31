@@ -39,7 +39,6 @@ static func _ability_offer(ability: AbilityData, rank: int) -> UpgradeData:
 	offer.id = ability.id
 	offer.target_id = ability.id
 	offer.offer_type = &"ability"
-	offer.offer_type = &"ability"
 	offer.title = ability.display_name + " %d/%d" % [rank + 1, ability.max_rank]
 	offer.description = "Increase this ability's rank."
 	offer.rarity = ability.rarity

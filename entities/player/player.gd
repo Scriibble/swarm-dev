@@ -3,23 +3,27 @@ extends CharacterBody2D
 signal health_changed(current: int, maximum: int)
 signal died
 
-const PROJECTILE_SCENE: PackedScene = preload("res://features/projectile/projectile.tscn")
+const EMBER_BOLT_RUNTIME = preload("res://features/abilities/ember_bolt_runtime.gd")
+const BLOOD_ORBIT_RUNTIME = preload("res://features/abilities/blood_orbit_runtime.gd")
+const CORE_PULSE_RUNTIME = preload("res://features/abilities/core_pulse_runtime.gd")
+const HELLFIRE_FIELD_RUNTIME = preload("res://features/abilities/hellfire_field_runtime.gd")
 const BONE_SPEAR_RUNTIME = preload("res://features/abilities/bone_spear_runtime.gd")
 const CHAIN_LASH_RUNTIME = preload("res://features/abilities/chain_lash_runtime.gd")
 const SOUL_DRAIN_RUNTIME = preload("res://features/abilities/soul_drain_runtime.gd")
+const IMP_SWARM_RUNTIME = preload("res://features/abilities/imp_swarm_runtime.gd")
 const DEMON_IDLE: Texture2D = preload("res://sprites/Tiny RPG Character Asset Pack 02 -Free Demon_A&Blood Monster_A/Characters(100x100 split)/Demon_A/Demon_A with shadows/Demon_A_Idle.png")
 
 @export var max_health: int = 100
 @export var move_speed: float = 145.0
 var health: int
 var attack_damage: int = 12
-var attack_cooldown: float = 0.0
 var orbit_damage: int = 7
 var core_pulse_damage: int = 14
 var cooldown_bonus: float = 0.0
 var attack_range: float = 180.0
 var last_direction := Vector2.RIGHT
 var _sprite: Sprite2D
+var _camera: Camera2D
 var ability_runtimes: Dictionary = {}
 
 func _ready() -> void:
@@ -29,10 +33,10 @@ func _ready() -> void:
 	_sprite.hframes = 6
 	_sprite.scale = Vector2.ONE * 0.72
 	add_child(_sprite)
-	var camera := Camera2D.new()
-	camera.position_smoothing_enabled = true
-	camera.position_smoothing_speed = 6.0
-	add_child(camera)
+	_camera = Camera2D.new()
+	_camera.position_smoothing_enabled = true
+	_camera.position_smoothing_speed = 6.0
+	add_child(_camera)
 	_apply_run_loadout()
 	_setup_ability_runtimes()
 	queue_redraw()
@@ -53,20 +57,9 @@ func _physics_process(delta: float) -> void:
 		last_direction = mouse_offset.normalized()
 	elif input_vector.length_squared() > 0.01:
 		last_direction = input_vector.normalized()
-	attack_cooldown -= delta
-	if attack_cooldown <= 0.0:
-		if has_ability(&"ember_bolt"):
-			fire_directional_attack()
-		attack_cooldown = maxf(0.32 - float(GameManager.level) * 0.012 - cooldown_bonus, 0.08)
 	for runtime in ability_runtimes.values():
 		runtime.tick(delta)
 	queue_redraw()
-
-func fire_directional_attack() -> void:
-	var projectile := PROJECTILE_SCENE.instantiate()
-	get_tree().current_scene.add_child(projectile)
-	projectile.setup(global_position + last_direction * 22.0, last_direction, attack_damage)
-	EventBus.ability_activated.emit(&"ember_bolt", global_position)
 
 func take_damage(amount: int) -> void:
 	if GameManager.run_state != GameManager.RunState.PLAYING:
@@ -74,6 +67,7 @@ func take_damage(amount: int) -> void:
 	health = maxi(health - amount, 0)
 	health_changed.emit(health, max_health)
 	EventBus.combat_feedback.emit(global_position, amount, &"player_hit")
+	_flash_sprite(Color("ff405b"))
 	if health == 0:
 		died.emit()
 		EventBus.player_died.emit()
@@ -85,6 +79,21 @@ func heal(amount: int) -> void:
 	health = mini(health + amount, max_health)
 	health_changed.emit(health, max_health)
 
+func shake_camera(amount: float) -> void:
+	if _camera == null:
+		return
+	var tween := _camera.create_tween()
+	for index in 3:
+		tween.tween_property(_camera, "offset", Vector2.from_angle(float(index) * 2.1) * amount, 0.035)
+	tween.tween_property(_camera, "offset", Vector2.ZERO, 0.035)
+
+func _flash_sprite(color: Color) -> void:
+	if _sprite == null:
+		return
+	_sprite.modulate = color
+	var tween := _sprite.create_tween()
+	tween.tween_property(_sprite, "modulate", Color.WHITE, 0.12)
+
 func apply_upgrade(upgrade: UpgradeData) -> void:
 	if upgrade.offer_type == &"evolution":
 		var evolved_runtime = ability_runtimes.get(upgrade.target_id)
@@ -92,6 +101,7 @@ func apply_upgrade(upgrade: UpgradeData) -> void:
 			evolved_runtime.evolved = true
 		else:
 			_ensure_runtime(upgrade.target_id, true)
+		EventBus.evolution_selected.emit(upgrade.evolution_id, global_position)
 		return
 	if upgrade.offer_type == &"ability":
 		match upgrade.target_id:
@@ -142,9 +152,14 @@ func _ensure_runtime(ability_id: StringName, evolved: bool) -> void:
 		return
 	var runtime: AbilityRuntime
 	match data.behavior_type:
+		&"projectile": runtime = EMBER_BOLT_RUNTIME.new()
+		&"orbit": runtime = BLOOD_ORBIT_RUNTIME.new()
+		&"core_pulse": runtime = CORE_PULSE_RUNTIME.new()
+		&"hazard": runtime = HELLFIRE_FIELD_RUNTIME.new()
 		&"bone_spear": runtime = BONE_SPEAR_RUNTIME.new()
 		&"chain_lash": runtime = CHAIN_LASH_RUNTIME.new()
 		&"soul_drain": runtime = SOUL_DRAIN_RUNTIME.new()
+		&"summon": runtime = IMP_SWARM_RUNTIME.new()
 		_:
 			return
 	runtime.setup(self, data, int(GameManager.ability_ranks.get(ability_id, 1)), evolved)

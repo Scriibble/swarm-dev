@@ -38,13 +38,21 @@ func _physics_process(delta: float) -> void:
 	attack_timer -= delta
 	if global_position.distance_to(core.global_position) < 55.0 and attack_timer <= 0.0:
 		if core.has_method("take_damage"):
-			core.take_damage(data.contact_damage)
+			var core_damage := data.contact_damage
+			var multiplier = core.get("damage_multiplier")
+			if multiplier != null:
+				core_damage = int(round(float(core_damage) * float(multiplier)))
+			core.take_damage(core_damage)
 		attack_timer = data.attack_interval
 
 func take_damage(amount: int) -> void:
 	health = maxi(health - amount, 0)
 	health_changed.emit(health, data.max_health)
 	EventBus.combat_feedback.emit(global_position, amount, &"enemy_hit")
+	if _sprite:
+		_sprite.modulate = Color("fff1c4")
+		var flash := _sprite.create_tween()
+		flash.tween_property(_sprite, "modulate", Color.WHITE, 0.08)
 	if health == 0:
 		died.emit()
 		EventBus.combat_feedback.emit(global_position, 0, &"enemy_death")
