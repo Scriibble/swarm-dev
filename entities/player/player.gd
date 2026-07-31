@@ -1,0 +1,170 @@
+extends CharacterBody2D
+
+signal health_changed(current: int, maximum: int)
+signal died
+
+const PROJECTILE_SCENE: PackedScene = preload("res://features/projectile/projectile.tscn")
+const BONE_SPEAR_RUNTIME = preload("res://features/abilities/bone_spear_runtime.gd")
+const CHAIN_LASH_RUNTIME = preload("res://features/abilities/chain_lash_runtime.gd")
+const SOUL_DRAIN_RUNTIME = preload("res://features/abilities/soul_drain_runtime.gd")
+const DEMON_IDLE: Texture2D = preload("res://sprites/Tiny RPG Character Asset Pack 02 -Free Demon_A&Blood Monster_A/Characters(100x100 split)/Demon_A/Demon_A with shadows/Demon_A_Idle.png")
+
+@export var max_health: int = 100
+@export var move_speed: float = 145.0
+var health: int
+var attack_damage: int = 12
+var attack_cooldown: float = 0.0
+var orbit_damage: int = 7
+var core_pulse_damage: int = 14
+var cooldown_bonus: float = 0.0
+var attack_range: float = 180.0
+var last_direction := Vector2.RIGHT
+var _sprite: Sprite2D
+var ability_runtimes: Dictionary = {}
+
+func _ready() -> void:
+	health = max_health
+	_sprite = Sprite2D.new()
+	_sprite.texture = DEMON_IDLE
+	_sprite.hframes = 6
+	_sprite.scale = Vector2.ONE * 0.72
+	add_child(_sprite)
+	var camera := Camera2D.new()
+	camera.position_smoothing_enabled = true
+	camera.position_smoothing_speed = 6.0
+	add_child(camera)
+	_apply_run_loadout()
+	_setup_ability_runtimes()
+	queue_redraw()
+
+func _physics_process(delta: float) -> void:
+	if GameManager.run_state != GameManager.RunState.PLAYING:
+		return
+	var input_vector := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	if input_vector.length_squared() > 0.01:
+		velocity = input_vector * move_speed
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, move_speed * 8.0 * delta)
+	move_and_slide()
+	global_position.x = clampf(global_position.x, 80.0, 1360.0)
+	global_position.y = clampf(global_position.y, 80.0, 860.0)
+	var mouse_offset := get_global_mouse_position() - global_position
+	if mouse_offset.length_squared() > 64.0:
+		last_direction = mouse_offset.normalized()
+	elif input_vector.length_squared() > 0.01:
+		last_direction = input_vector.normalized()
+	attack_cooldown -= delta
+	if attack_cooldown <= 0.0:
+		if has_ability(&"ember_bolt"):
+			fire_directional_attack()
+		attack_cooldown = maxf(0.32 - float(GameManager.level) * 0.012 - cooldown_bonus, 0.08)
+	for runtime in ability_runtimes.values():
+		runtime.tick(delta)
+	queue_redraw()
+
+func fire_directional_attack() -> void:
+	var projectile := PROJECTILE_SCENE.instantiate()
+	get_tree().current_scene.add_child(projectile)
+	projectile.setup(global_position + last_direction * 22.0, last_direction, attack_damage)
+	EventBus.ability_activated.emit(&"ember_bolt", global_position)
+
+func take_damage(amount: int) -> void:
+	if GameManager.run_state != GameManager.RunState.PLAYING:
+		return
+	health = maxi(health - amount, 0)
+	health_changed.emit(health, max_health)
+	EventBus.combat_feedback.emit(global_position, amount, &"player_hit")
+	if health == 0:
+		died.emit()
+		EventBus.player_died.emit()
+		GameManager.finish_run(false)
+
+func heal(amount: int) -> void:
+	if amount <= 0 or GameManager.run_state != GameManager.RunState.PLAYING:
+		return
+	health = mini(health + amount, max_health)
+	health_changed.emit(health, max_health)
+
+func apply_upgrade(upgrade: UpgradeData) -> void:
+	if upgrade.offer_type == &"evolution":
+		var evolved_runtime = ability_runtimes.get(upgrade.target_id)
+		if evolved_runtime:
+			evolved_runtime.evolved = true
+		else:
+			_ensure_runtime(upgrade.target_id, true)
+		return
+	if upgrade.offer_type == &"ability":
+		match upgrade.target_id:
+			&"ember_bolt": attack_damage += 4
+			&"blood_orbit": orbit_damage += 3
+			&"core_pulse": core_pulse_damage += 3
+			_: _ensure_runtime(upgrade.target_id, false)
+		return
+	match upgrade.stat:
+		&"attack_damage": attack_damage += int(upgrade.amount)
+		&"move_speed": move_speed += upgrade.amount
+		&"max_health": max_health += int(upgrade.amount); health += int(upgrade.amount)
+		&"core_health": _increase_core_health(int(upgrade.amount))
+		&"cooldown": cooldown_bonus += upgrade.amount
+		&"range": attack_range += upgrade.amount
+
+func _apply_run_loadout() -> void:
+	for passive_id in GameManager.passive_ranks:
+		var rank: int = int(GameManager.passive_ranks[passive_id])
+		match StringName(passive_id):
+			&"emberheart": attack_damage += rank * 4
+			&"cinder_step": move_speed += rank * 18
+			&"core_ward": _increase_core_health(rank * 25)
+			&"attack_damage": attack_damage += rank * 5
+			&"cooldown": cooldown_bonus += rank * 0.04
+			&"range": attack_range += rank * 25
+			&"max_health": max_health += rank * 20; health += rank * 20
+	for ability_id in GameManager.ability_ranks:
+		var rank: int = int(GameManager.ability_ranks[ability_id])
+		match StringName(ability_id):
+			&"ember_bolt": attack_damage += maxi(rank - 1, 0) * 4
+			&"blood_orbit": orbit_damage += maxi(rank - 1, 0) * 3
+			&"core_pulse": core_pulse_damage += maxi(rank - 1, 0) * 3
+			_: pass
+	_apply_demon_modifier()
+
+func _setup_ability_runtimes() -> void:
+	for ability_id in GameManager.ability_ranks:
+		_ensure_runtime(StringName(ability_id), StringName(ability_id) in GameManager.evolved_abilities)
+
+func _ensure_runtime(ability_id: StringName, evolved: bool) -> void:
+	if ability_runtimes.has(ability_id):
+		ability_runtimes[ability_id].rank = int(GameManager.ability_ranks.get(ability_id, 1))
+		ability_runtimes[ability_id].evolved = evolved or ability_runtimes[ability_id].evolved
+		return
+	var data := RogueliteCatalog.ability_by_id(ability_id)
+	if data == null:
+		return
+	var runtime: AbilityRuntime
+	match data.behavior_type:
+		&"bone_spear": runtime = BONE_SPEAR_RUNTIME.new()
+		&"chain_lash": runtime = CHAIN_LASH_RUNTIME.new()
+		&"soul_drain": runtime = SOUL_DRAIN_RUNTIME.new()
+		_:
+			return
+	runtime.setup(self, data, int(GameManager.ability_ranks.get(ability_id, 1)), evolved)
+	ability_runtimes[ability_id] = runtime
+	add_child(runtime)
+
+func has_ability(ability_id: StringName) -> bool:
+	return int(GameManager.ability_ranks.get(ability_id, 0)) > 0
+
+func _apply_demon_modifier() -> void:
+	if GameManager.active_demon_id == &"demon_bulwark":
+		max_health += 20
+		health += 20
+	elif GameManager.active_demon_id == &"demon_harbinger":
+		attack_damage = int(round(float(attack_damage) * 1.08))
+
+func _increase_core_health(amount: int) -> void:
+	var core := get_tree().get_first_node_in_group("objective")
+	if core and core.has_method("increase_max_health"):
+		core.increase_max_health(amount)
+
+func _draw() -> void:
+	draw_circle(Vector2(0, 24), 18.0, Color(0, 0, 0, 0.26))

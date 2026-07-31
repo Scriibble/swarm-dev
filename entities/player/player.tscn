@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource path="res://entities/player/player.gd" type="Script" id="1"]
+[sub_resource type="CapsuleShape2D" id="Capsule"]
+radius = 15.0
+height = 34.0
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 1
+collision_mask = 16
+script = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("Capsule")
