@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Current State.md",
+                "file": "Art Assets.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Current State"
+              "title": "Art Assets"
             }
           }
         ]
@@ -190,11 +190,12 @@
   },
   "active": "1075ab7f0886a0c7",
   "lastOpenFiles": [
+    "Current State.md",
+    "Backlog.md",
+    "Art Assets.md",
     "Progression.md",
     "Welcome.md",
     "Architecture.md",
-    "Backlog.md",
-    "Current State.md",
     "Verification Log.md"
   ]
 }

@@ -13,6 +13,8 @@ var ability_ranks: Dictionary = {}
 var passive_ranks: Dictionary = {}
 var evolved_abilities: Array[StringName] = []
 var run_seed: int = 0
+var forced_run_seed: int = -1
+var suppress_balance_log := false
 var kills: int = 0
 var core_health: int = 300
 var core_max_health: int = 300
@@ -28,12 +30,12 @@ var _offer_rng := RandomNumberGenerator.new()
 
 func start_run() -> void:
 	reset_run()
-	run_seed = int(Time.get_unix_time_from_system()) ^ randi()
+	run_seed = forced_run_seed if forced_run_seed >= 0 else int(Time.get_unix_time_from_system()) ^ randi()
 	_offer_rng.seed = run_seed
 	var loadout := ProfileManager.get_starting_loadout()
 	active_demon_id = StringName(loadout.get("demon_id", "demon_summoner"))
 	demon_modifiers = Dictionary(loadout.get("modifiers", {}))
-	core_max_health = 3600 + int(demon_modifiers.get("core_max_health", 0))
+	core_max_health = 9000 + int(demon_modifiers.get("core_max_health", 0))
 	core_health = core_max_health
 	for ability_id in loadout.abilities:
 		ability_ranks[StringName(ability_id)] = 1
@@ -54,8 +56,8 @@ func reset_run() -> void:
 	passive_ranks.clear()
 	evolved_abilities.clear()
 	kills = 0
-	core_health = 3600
-	core_max_health = 3600
+	core_health = 9000
+	core_max_health = 9000
 	current_offers.clear()
 	active_demon_id = &"demon_summoner"
 	demon_modifiers.clear()
@@ -155,7 +157,8 @@ func finish_run(victory: bool) -> void:
 		reward.currency_awarded += 20
 	last_run_summary = get_run_summary(victory, reward.currency_awarded)
 	ProfileManager.apply_run_reward(reward)
-	_append_balance_log(last_run_summary)
+	if not suppress_balance_log:
+		_append_balance_log(last_run_summary)
 	EventBus.run_rewarded.emit(reward)
 	EventBus.run_ended.emit(victory)
 

@@ -21,6 +21,7 @@ func tick(delta: float) -> void:
 	if GameManager.active_demon_id == &"demon_harbinger" and caster.global_position.distance_to(target.global_position) < 180.0:
 		damage = int(round(float(damage) * (1.0 + float(GameManager.demon_modifiers.get("close_damage", 0.0)))))
 	target.take_damage(damage)
+	record_damage(damage, target)
 	EventBus.ability_activated.emit(data.id, target.global_position)
 	cooldown = scaled_cooldown()
 

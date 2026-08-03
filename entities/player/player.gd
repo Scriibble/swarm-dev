@@ -11,8 +11,7 @@ const BONE_SPEAR_RUNTIME = preload("res://features/abilities/bone_spear_runtime.
 const CHAIN_LASH_RUNTIME = preload("res://features/abilities/chain_lash_runtime.gd")
 const SOUL_DRAIN_RUNTIME = preload("res://features/abilities/soul_drain_runtime.gd")
 const IMP_SWARM_RUNTIME = preload("res://features/abilities/imp_swarm_runtime.gd")
-const DEMON_IDLE: Texture2D = preload("res://sprites/Tiny RPG Character Asset Pack 02 -Free Demon_A&Blood Monster_A/Characters(100x100 split)/Demon_A/Demon_A with shadows/Demon_A_Idle.png")
-
+const CONTROLLER_AIM_DEADZONE := 0.2
 @export var max_health: int = 100
 @export var move_speed: float = 145.0
 var health: int
@@ -22,20 +21,20 @@ var core_pulse_damage: int = 14
 var cooldown_bonus: float = 0.0
 var attack_range: float = 180.0
 var last_direction := Vector2.RIGHT
-var _sprite: Sprite2D
+var test_aim_direction := Vector2.ZERO
+@onready var _sprite: Sprite2D = %PlayerSprite
 var _camera: Camera2D
 var ability_runtimes: Dictionary = {}
 
 func _ready() -> void:
 	health = max_health
-	_sprite = Sprite2D.new()
-	_sprite.texture = DEMON_IDLE
-	_sprite.hframes = 6
-	_sprite.scale = Vector2.ONE * 0.72
-	add_child(_sprite)
 	_camera = Camera2D.new()
 	_camera.position_smoothing_enabled = true
 	_camera.position_smoothing_speed = 6.0
+	_camera.limit_left = 0
+	_camera.limit_top = 0
+	_camera.limit_right = 1440
+	_camera.limit_bottom = 940
 	add_child(_camera)
 	_apply_run_loadout()
 	_setup_ability_runtimes()
@@ -52,14 +51,35 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	global_position.x = clampf(global_position.x, 80.0, 1360.0)
 	global_position.y = clampf(global_position.y, 80.0, 860.0)
-	var mouse_offset := get_global_mouse_position() - global_position
-	if mouse_offset.length_squared() > 64.0:
-		last_direction = mouse_offset.normalized()
-	elif input_vector.length_squared() > 0.01:
-		last_direction = input_vector.normalized()
+	if test_aim_direction.length_squared() > 0.01:
+		last_direction = test_aim_direction.normalized()
+	else:
+		var controller_aim_direction := _get_controller_aim_direction()
+		if controller_aim_direction.length_squared() > CONTROLLER_AIM_DEADZONE * CONTROLLER_AIM_DEADZONE:
+			last_direction = controller_aim_direction.normalized()
+		else:
+			var mouse_offset := get_global_mouse_position() - global_position
+			if mouse_offset.length_squared() > 64.0:
+				last_direction = mouse_offset.normalized()
+			elif input_vector.length_squared() > 0.01:
+				last_direction = input_vector.normalized()
 	for runtime in ability_runtimes.values():
 		runtime.tick(delta)
 	queue_redraw()
+
+func _get_controller_aim_direction() -> Vector2:
+	var strongest_aim := Vector2.ZERO
+	var strongest_strength := 0.0
+	for device in Input.get_connected_joypads():
+		var aim := Vector2(
+			Input.get_joy_axis(device, JOY_AXIS_RIGHT_X),
+			Input.get_joy_axis(device, JOY_AXIS_RIGHT_Y)
+		)
+		var strength := aim.length_squared()
+		if strength > strongest_strength:
+			strongest_strength = strength
+			strongest_aim = aim
+	return strongest_aim
 
 func take_damage(amount: int) -> void:
 	if GameManager.run_state != GameManager.RunState.PLAYING:
@@ -104,11 +124,11 @@ func apply_upgrade(upgrade: UpgradeData) -> void:
 		EventBus.evolution_selected.emit(upgrade.evolution_id, global_position)
 		return
 	if upgrade.offer_type == &"ability":
+		_ensure_runtime(upgrade.target_id, false)
 		match upgrade.target_id:
 			&"ember_bolt": attack_damage += 4
 			&"blood_orbit": orbit_damage += 3
 			&"core_pulse": core_pulse_damage += 3
-			_: _ensure_runtime(upgrade.target_id, false)
 		return
 	match upgrade.stat:
 		&"attack_damage": attack_damage += int(upgrade.amount)

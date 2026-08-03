@@ -12,7 +12,6 @@ func tick(delta: float) -> void:
 		var imp := IMP_SCENE.instantiate()
 		var angle := float(index) / float(count) * TAU + Time.get_ticks_msec() * 0.001
 		caster.get_tree().current_scene.add_child(imp)
-		imp.setup(caster.global_position + Vector2.from_angle(angle) * 28.0, caster, data.base_damage + rank * 2 + (6 if evolved else 0), Color("d576ff") if evolved else Color("a44dff"))
+		imp.setup(caster.global_position + Vector2.from_angle(angle) * 28.0, caster, data.base_damage + rank * 2 + (6 if evolved else 0), Color("d576ff") if evolved else Color("a44dff"), data.id)
 	EventBus.ability_activated.emit(data.id, caster.global_position)
 	cooldown = scaled_cooldown()
-

@@ -30,3 +30,8 @@ func enemies_in_range(max_range: float) -> Array[Node2D]:
 		if is_instance_valid(node) and caster.global_position.distance_to(node.global_position) <= max_range:
 			result.append(node)
 	return result
+
+func record_damage(amount: int, target: Node2D) -> void:
+	if amount <= 0 or target == null:
+		return
+	EventBus.ability_damage_dealt.emit(data.id, amount, StringName(target.get("data").id if target.get("data") != null else "enemy"))

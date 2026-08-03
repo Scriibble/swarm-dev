@@ -40,7 +40,7 @@ func _init() -> void:
 	var enemy_scene_text := FileAccess.get_file_as_string("res://entities/enemy/enemy.tscn")
 	var core_scene_text := FileAccess.get_file_as_string("res://entities/core/hell_core.tscn")
 	assert(player_scene_text.contains("collision_mask = 24"), "Player must collide with the hell-core and obstacles")
-	assert(enemy_scene_text.contains("collision_mask = 26"), "Enemies must collide with the hell-core, enemies, and obstacles")
+	assert(enemy_scene_text.contains("collision_mask = 24"), "Enemies must collide with the hell-core and obstacles without blocking one another")
 	assert(core_scene_text.contains("collision_mask = 7"), "Hell-core must participate in player, enemy, and projectile collisions")
 	var ability_ranks := {&"ember_bolt": 1, &"blood_orbit": 1, &"core_pulse": 1}
 	var passive_ranks := {&"emberheart": 1, &"cinder_step": 1, &"core_ward": 1}

@@ -1,8 +1,8 @@
 # Infernal Swarm
 
-Notes for Swarm-dev`.
+Notes for Swarm-dev.
 
-**Last reviewed:** 2026-07-31
+**Last reviewed:** 2026-08-03
 
 ## Start here
 
@@ -10,6 +10,7 @@ Notes for Swarm-dev`.
 - [[Architecture]]: where the main components are.
 - [[Progression]]: abilities, passives, unlocks, and rewards.
 - [[Backlog]]: the work that would make the next build stronger.
+- [[Art Assets]]: the exact visual assets needed.
 - [[Verification Log]]: checks run against the project.
 
 ## The game
@@ -18,4 +19,4 @@ You play a demon defending an Infernal Core from waves of soldiers and orcs. Eac
 
 Kills give you XP and new upgrade choices. A successful run earns Infernal Shards, which you spend in the Infernal Stronghold to unlock new demons, abilities, and passives.
 
-The game has a playable first slice. The Stronghold and the first combat abilities work. Several later abilities have names, costs, and upgrade rules, but still need their own combat behavior.
+The game has a playable first slice. The Stronghold and all eight catalogued abilities have runtime combat behavior. Remaining work covers final character animation, core art, ability VFX, arena dressing, UI art, audio, and release validation.

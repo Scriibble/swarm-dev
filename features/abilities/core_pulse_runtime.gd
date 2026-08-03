@@ -28,4 +28,5 @@ func _emit_pulse(origin: Vector2, pulse_range: float, damage: int) -> void:
 	for enemy in caster.get_tree().get_nodes_in_group("enemies"):
 		if is_instance_valid(enemy) and enemy.global_position.distance_to(origin) <= pulse_range:
 			enemy.take_damage(damage)
+			record_damage(damage, enemy)
 	EventBus.ability_activated.emit(data.id, origin)

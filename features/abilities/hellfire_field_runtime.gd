@@ -20,6 +20,7 @@ func tick(delta: float) -> void:
 	var hazard := HAZARD_SCENE.instantiate()
 	hazard.position = target
 	hazard.damage = data.base_damage + rank * 2 + (8 if evolved else 0)
+	hazard.ability_id = data.id
 	hazard.lifetime = 3.0 if not evolved else 4.5
 	hazard.evolved = evolved
 	caster.get_tree().current_scene.add_child(hazard)

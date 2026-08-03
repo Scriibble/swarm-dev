@@ -4,7 +4,7 @@ signal core_health_changed(current: int, maximum: int)
 signal core_destroyed
 
 @export var max_health: int = 300
-@export var damage_multiplier: float = 0.12
+@export var damage_multiplier: float = 0.06
 const CORE_TEXTURE: Texture2D = preload("res://assets/placeholder/hell_core_placeholder.png")
 var health: int
 var _sprite: Sprite2D

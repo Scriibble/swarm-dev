@@ -12,6 +12,7 @@ func tick(delta: float) -> void:
 	var target: Node2D = targets[0]
 	var damage := scaled_damage()
 	target.take_damage(damage)
+	record_damage(damage, target)
 	caster.heal(maxi(1, int(round(float(damage) * data.heal_ratio * (1.25 if GameManager.active_demon_id == &"demon_harbinger" else 1.0)))))
 	var beam := Line2D.new()
 	beam.points = PackedVector2Array([caster.global_position, target.global_position])

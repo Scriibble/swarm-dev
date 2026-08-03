@@ -7,6 +7,7 @@ var remaining_hits: int = 1
 var projectile_color := Color("ff6b35")
 var projectile_size: float = 1.0
 var trail_color := Color(1.0, 0.35, 0.12, 0.55)
+var ability_id: StringName = &""
 
 func setup(origin: Vector2, direction: Vector2, damage_amount: int) -> void:
 	global_position = origin
@@ -15,7 +16,7 @@ func setup(origin: Vector2, direction: Vector2, damage_amount: int) -> void:
 	rotation = velocity.angle()
 	remaining_hits = 1
 
-func setup_extended(origin: Vector2, direction: Vector2, damage_amount: int, pierce: int, color: Color, speed: float, life: float, size: float = 1.0, trail: Color = Color(1.0, 0.35, 0.12, 0.55)) -> void:
+func setup_extended(origin: Vector2, direction: Vector2, damage_amount: int, pierce: int, color: Color, speed: float, life: float, size: float = 1.0, trail: Color = Color(1.0, 0.35, 0.12, 0.55), source_ability_id: StringName = &"") -> void:
 	setup(origin, direction, damage_amount)
 	velocity = direction.normalized() * speed
 	lifetime = life
@@ -23,6 +24,7 @@ func setup_extended(origin: Vector2, direction: Vector2, damage_amount: int, pie
 	projectile_color = color
 	projectile_size = size
 	trail_color = trail
+	ability_id = source_ability_id
 	queue_redraw()
 
 func _physics_process(delta: float) -> void:
@@ -37,6 +39,10 @@ func _physics_process(delta: float) -> void:
 			return
 		if body.has_method("take_damage") and body.is_in_group("enemies"):
 			body.take_damage(damage)
+			if ability_id != &"":
+				var event_bus := get_node_or_null("/root/EventBus")
+				if event_bus:
+					event_bus.ability_damage_dealt.emit(ability_id, damage, StringName(body.get("data").id if body.get("data") != null else "enemy"))
 			remaining_hits -= 1
 			if remaining_hits <= 0:
 				queue_free()

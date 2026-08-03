@@ -17,7 +17,9 @@ func tick(delta: float) -> void:
 	var previous: Vector2 = caster.global_position
 	var damage := float(scaled_damage())
 	for target in chain:
-		target.take_damage(maxi(1, int(round(damage))))
+		var hit_damage := maxi(1, int(round(damage)))
+		target.take_damage(hit_damage)
+		record_damage(hit_damage, target)
 		_spawn_arc(previous, target.global_position)
 		previous = target.global_position
 		damage *= 0.82 if evolved else data.damage_falloff

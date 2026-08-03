@@ -6,11 +6,13 @@ var damage: int = 8
 var lifetime: float = 2.5
 var source: Node2D
 var phase: float = 0.0
+var ability_id: StringName = &""
 
-func setup(origin: Vector2, source_node: Node2D, damage_amount: int, color: Color) -> void:
+func setup(origin: Vector2, source_node: Node2D, damage_amount: int, color: Color, source_ability_id: StringName = &"") -> void:
 	global_position = origin
 	source = source_node
 	damage = damage_amount
+	ability_id = source_ability_id
 	$Visual.color = color
 	queue_redraw()
 
@@ -37,6 +39,10 @@ func _physics_process(delta: float) -> void:
 			return
 		if body.has_method("take_damage") and body.is_in_group("enemies"):
 			body.take_damage(damage)
+			if ability_id != &"":
+				var event_bus := get_node_or_null("/root/EventBus")
+				if event_bus:
+					event_bus.ability_damage_dealt.emit(ability_id, damage, StringName(body.get("data").id if body.get("data") != null else "enemy"))
 			queue_free()
 			return
 

@@ -27,10 +27,16 @@ var xp_label: Label
 var wave_label: Label
 var upgrade_panel: PanelContainer
 var upgrade_list: VBoxContainer
+var start_button: Button
 var reward_text: String = ""
 var feedback: CombatFeedback
+var _menu_navigation_cooldown := 0.0
+var _menu_accept_was_pressed := false
 
 func _ready() -> void:
+	# The pause and level-up overlays must continue receiving controller input
+	# while the gameplay portion of the scene tree is paused.
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	rng.seed = 92177
 	_build_hud()
 	feedback = FEEDBACK_SCRIPT.new()
@@ -47,6 +53,7 @@ func _ready() -> void:
 	GameManager.start_run.call_deferred()
 
 func _process(delta: float) -> void:
+	_update_controller_menu_input(delta)
 	if GameManager.run_state == GameManager.RunState.PLAYING:
 		GameManager.tick_run(delta)
 		spawn_timer -= delta
@@ -57,12 +64,34 @@ func _process(delta: float) -> void:
 			GameManager.finish_run(true)
 	_update_hud()
 
+func _input(event: InputEvent) -> void:
+	if not overlay.visible and not upgrade_panel.visible:
+		return
+	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_A:
+		var focused := get_viewport().gui_get_focus_owner()
+		if focused is BaseButton and not focused.disabled:
+			focused.emit_signal("pressed")
+			get_viewport().set_input_as_handled()
+		_menu_accept_was_pressed = true
+	elif event is InputEventJoypadMotion and event.axis in [JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y] and _menu_navigation_cooldown <= 0.0:
+		var direction := Vector2(Input.get_joy_axis(event.device, JOY_AXIS_LEFT_X), Input.get_joy_axis(event.device, JOY_AXIS_LEFT_Y))
+		if direction.length_squared() > 0.42:
+			_move_controller_focus(direction.normalized())
+			_menu_navigation_cooldown = 0.22
+
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause_game"):
+	if event.is_action_pressed("ui_cancel"):
 		if GameManager.run_state == GameManager.RunState.PLAYING:
 			GameManager.set_paused(true)
 		elif GameManager.run_state == GameManager.RunState.PAUSED:
 			GameManager.set_paused(false)
+		return
+	if not event.is_action_pressed("confirm"):
+		return
+	var focused := get_viewport().gui_get_focus_owner()
+	if focused is BaseButton and not focused.disabled:
+		focused.emit_signal("pressed")
+		get_viewport().set_input_as_handled()
 
 func _build_world() -> void:
 	for child in get_children():
@@ -119,6 +148,7 @@ func _make_enemy_data(is_orc: bool) -> EnemyData:
 	data.move_speed = 31.0 if is_orc else 43.0
 	data.contact_damage = 12 if is_orc else 8
 	data.attack_interval = 1.25 if is_orc else 0.8
+	data.player_aggro_range = 240.0 if is_orc else 0.0
 	data.xp_value = 4 if is_orc else 3
 	data.texture = ORC_IDLE if is_orc else SOLDIER_IDLE
 	data.idle_frames = 6
@@ -136,13 +166,15 @@ func _on_run_ended(victory: bool) -> void:
 	overlay.visible = true
 	status_label.text = ("HELLS DEFENDED" if victory else "THE HELLS HAVE FALLEN") + "\n" + reward_text + "\n" + GameManager.last_run_summary
 	status_label.modulate = Color("ffb52e") if victory else Color("ff5b70")
-	$HUD/Overlay/Center/StartButton.text = "RETURN TO STRONGHOLD"
+	start_button.text = "RETURN TO STRONGHOLD"
+	start_button.grab_focus.call_deferred()
 
 func _on_run_paused(is_paused: bool) -> void:
 	if is_paused:
 		overlay.visible = true
 		status_label.text = "PAUSED"
-		$HUD/Overlay/Center/StartButton.text = "RESUME"
+		start_button.text = "RESUME"
+		start_button.grab_focus.call_deferred()
 	else:
 		overlay.visible = false
 
@@ -162,16 +194,78 @@ func _show_upgrade_choices(choices: Array[UpgradeData]) -> void:
 		child.queue_free()
 	for choice in choices:
 		var button := Button.new()
+		button.focus_mode = Control.FOCUS_ALL
+		button.add_to_group("controller_menu_option")
 		button.text = "%s\n%s" % [choice.title, choice.description]
 		button.custom_minimum_size = Vector2(390, 62)
 		button.pressed.connect(_choose_upgrade.bind(choice))
 		upgrade_list.add_child(button)
+	if upgrade_list.get_child_count() > 0:
+		(upgrade_list.get_child(0) as Button).grab_focus.call_deferred()
 
 func _choose_upgrade(upgrade: UpgradeData) -> void:
 	GameManager.choose_upgrade(upgrade)
 	player.apply_upgrade(upgrade)
 	get_tree().paused = false
 	upgrade_panel.visible = false
+
+func _update_controller_menu_input(delta: float) -> void:
+	if not overlay.visible and not upgrade_panel.visible:
+		_menu_accept_was_pressed = false
+		return
+	_menu_navigation_cooldown = maxf(_menu_navigation_cooldown - delta, 0.0)
+	var direction := _get_controller_menu_direction()
+	if direction.length_squared() > 0.42 and _menu_navigation_cooldown <= 0.0:
+		_move_controller_focus(direction.normalized())
+		_menu_navigation_cooldown = 0.22
+	var accept_pressed := false
+	for device in Input.get_connected_joypads():
+		if Input.is_joy_button_pressed(device, JOY_BUTTON_A):
+			accept_pressed = true
+			break
+	if accept_pressed and not _menu_accept_was_pressed:
+		var focused := get_viewport().gui_get_focus_owner()
+		if focused is BaseButton and not focused.disabled:
+			focused.emit_signal("pressed")
+	_menu_accept_was_pressed = accept_pressed
+
+func _get_controller_menu_direction() -> Vector2:
+	var strongest := Vector2.ZERO
+	var strongest_strength := 0.0
+	for device in Input.get_connected_joypads():
+		var direction := Vector2(Input.get_joy_axis(device, JOY_AXIS_LEFT_X), Input.get_joy_axis(device, JOY_AXIS_LEFT_Y))
+		if direction.length_squared() > strongest_strength:
+			strongest = direction
+			strongest_strength = direction.length_squared()
+	return strongest
+
+func _move_controller_focus(direction: Vector2) -> void:
+	var focused := get_viewport().gui_get_focus_owner() as Control
+	var options: Array[Control] = []
+	for node in get_tree().get_nodes_in_group("controller_menu_option"):
+		if node is Control and is_instance_valid(node) and node.visible and not node.disabled and node.focus_mode != Control.FOCUS_NONE:
+			options.append(node)
+	if options.is_empty():
+		return
+	if focused == null or not options.has(focused):
+		options[0].grab_focus()
+		return
+	var origin := focused.global_position + focused.size * 0.5
+	var best: Control
+	var best_score := INF
+	for option in options:
+		if option == focused:
+			continue
+		var offset: Vector2 = option.global_position + option.size * 0.5 - origin
+		var forward := offset.dot(direction)
+		if forward <= 4.0:
+			continue
+		var score := forward + absf(offset.cross(direction)) * 1.5
+		if score < best_score:
+			best = option
+			best_score = score
+	if best:
+		best.grab_focus()
 
 func _update_hud() -> void:
 	if not is_instance_valid(timer_label):
@@ -215,8 +309,10 @@ func _build_hud() -> void:
 		elif item == "WAVE": wave_label = label
 		else: timer_label = label
 	var help := Label.new()
-	help.text = "WASD / LEFT STICK MOVE  •  AIM WITH MOUSE  •  SPACE PAUSE  •  AUTO-CAST"
-	help.position = Vector2(22, 890)
+	help.text = "WASD / LEFT STICK MOVE  •  MOUSE / RIGHT STICK AIM  •  SPACE / MENU PAUSE  •  AUTO-CAST"
+	help.set_anchors_preset(Control.PRESET_BOTTOM_LEFT)
+	help.position = Vector2(22, -34)
+	help.size = Vector2(700, 28)
 	help.add_theme_color_override("font_color", Color(0.72, 0.62, 0.8, 0.9))
 	hud.add_child(help)
 	overlay = Control.new()
@@ -227,13 +323,16 @@ func _build_hud() -> void:
 	shade.color = Color(0.02, 0.01, 0.04, 0.82)
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	overlay.add_child(shade)
+	var center_frame := CenterContainer.new()
+	center_frame.name = "CenterFrame"
+	center_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.add_child(center_frame)
 	var center := VBoxContainer.new()
 	center.name = "Center"
-	center.set_anchors_preset(Control.PRESET_CENTER)
-	center.position = Vector2(-210, -100)
-	center.size = Vector2(420, 200)
+	center.custom_minimum_size = Vector2(680, 0)
 	center.alignment = BoxContainer.ALIGNMENT_CENTER
-	overlay.add_child(center)
+	center.add_theme_constant_override("separation", 10)
+	center_frame.add_child(center)
 	var title := Label.new()
 	title.text = "INFERNAL SWARM"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -243,14 +342,18 @@ func _build_hud() -> void:
 	status_label = Label.new()
 	status_label.text = "DEFEND THE HELLS"
 	status_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	status_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	status_label.custom_minimum_size = Vector2(680, 86)
+	status_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	status_label.add_theme_font_size_override("font_size", 20)
 	center.add_child(status_label)
-	var start := Button.new()
-	start.name = "StartButton"
-	start.text = "BEGIN THE INVASION"
-	start.custom_minimum_size = Vector2(300, 54)
-	start.pressed.connect(_start_button_pressed)
-	center.add_child(start)
+	start_button = Button.new()
+	start_button.name = "StartButton"
+	start_button.focus_mode = Control.FOCUS_ALL
+	start_button.text = "BEGIN THE INVASION"
+	start_button.custom_minimum_size = Vector2(300, 54)
+	start_button.pressed.connect(_start_button_pressed)
+	center.add_child(start_button)
 	hud.add_child(overlay)
 	overlay.visible = true
 	upgrade_panel = PanelContainer.new()

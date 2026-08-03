@@ -5,6 +5,7 @@ extends Area2D
 @export var evolved: bool = false
 var _timer: float = 0.0
 var _phase: float = 0.0
+var ability_id: StringName = &""
 
 func _physics_process(delta: float) -> void:
 	_phase += delta * (5.0 if evolved else 3.5)
@@ -26,6 +27,10 @@ func _physics_process(delta: float) -> void:
 			body.take_damage(damage)
 		elif body.has_method("take_damage") and body.is_in_group("enemies"):
 			body.take_damage(damage)
+			if ability_id != &"":
+				var event_bus := get_node_or_null("/root/EventBus")
+				if event_bus:
+					event_bus.ability_damage_dealt.emit(ability_id, damage, StringName(body.get("data").id if body.get("data") != null else "enemy"))
 
 func _draw() -> void:
 	var radius := 25.0 if evolved else 20.0
