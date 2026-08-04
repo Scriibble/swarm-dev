@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource path="res://tests/ui_focus_integration.gd" type="Script" id="1"]
+
+[node name="UIFocusIntegration" type="Node"]
+script = ExtResource("1")

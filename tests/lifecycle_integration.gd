@@ -34,8 +34,7 @@ func _run_integration_suite() -> void:
 
 	var main_scene := preload("res://levels/main.tscn").instantiate()
 	add_child(main_scene)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _wait_for_world(main_scene)
 	assert(GameManager.run_state == GameManager.RunState.PLAYING, "Main scene must start a run")
 	assert(GameManager.active_demon_id == &"demon_bulwark", "Run must use the selected demon")
 	var player: CharacterBody2D = main_scene.get("player")
@@ -65,6 +64,8 @@ func _run_integration_suite() -> void:
 		ability_upgrade.target_id = ability_id
 		ability_upgrade.offer_type = &"ability"
 		ability_upgrade.rank_increment = 1
+		GameManager.run_state = GameManager.RunState.LEVEL_UP
+		GameManager.current_offers = [ability_upgrade]
 		GameManager.choose_upgrade(ability_upgrade)
 		player.apply_upgrade(ability_upgrade)
 		assert(player.ability_runtimes.has(ability_id), "Ability runtime missing: %s" % ability_id)
@@ -75,6 +76,8 @@ func _run_integration_suite() -> void:
 	evolution.target_id = &"ember_bolt"
 	evolution.offer_type = &"evolution"
 	evolution.evolution_id = &"inferno_bolt"
+	GameManager.run_state = GameManager.RunState.LEVEL_UP
+	GameManager.current_offers = [evolution]
 	GameManager.choose_upgrade(evolution)
 	player.apply_upgrade(evolution)
 	assert(&"ember_bolt" in GameManager.evolved_abilities, "Evolution must be recorded")
@@ -112,8 +115,7 @@ func _run_integration_suite() -> void:
 
 	var core_scene := preload("res://levels/main.tscn").instantiate()
 	add_child(core_scene)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _wait_for_world(core_scene)
 	var test_core: StaticBody2D = core_scene.get("core")
 	test_core.take_damage(999999)
 	assert(GameManager.run_state == GameManager.RunState.DEFEAT, "Core destruction must end the run")
@@ -122,8 +124,7 @@ func _run_integration_suite() -> void:
 
 	var victory_scene := preload("res://levels/main.tscn").instantiate()
 	add_child(victory_scene)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _wait_for_world(victory_scene)
 	GameManager.elapsed_time = 600.0
 	GameManager.finish_run(true)
 	assert(GameManager.run_state == GameManager.RunState.VICTORY, "Victory must end the run")
@@ -135,3 +136,10 @@ func _run_integration_suite() -> void:
 	ProfileManager.configure_save_path_for_testing("")
 	ProfileManager.load_profile()
 	print("lifecycle integration test passed: pause, upgrades, abilities, evolution, defeat, victory, rewards, and persistence")
+
+func _wait_for_world(main_scene: Node) -> void:
+	for _frame in 180:
+		await get_tree().physics_frame
+		if main_scene.get("player") != null and main_scene.get("core") != null:
+			return
+	assert(false, "Main scene did not finish building the world")

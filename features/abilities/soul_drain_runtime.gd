@@ -5,7 +5,7 @@ func tick(delta: float) -> void:
 	super.tick(delta)
 	if cooldown > 0.0 or caster == null or not is_instance_valid(caster):
 		return
-	var targets := enemies_in_range(data.range + float(rank - 1) * 15.0)
+	var targets := enemies_in_range(data.range + float(rank - 1) * 15.0 + (45.0 if evolved else 0.0))
 	if targets.is_empty():
 		return
 	targets.sort_custom(func(a: Node2D, b: Node2D) -> bool: return caster.global_position.distance_squared_to(a.global_position) < caster.global_position.distance_squared_to(b.global_position))
@@ -13,10 +13,11 @@ func tick(delta: float) -> void:
 	var damage := scaled_damage()
 	target.take_damage(damage)
 	record_damage(damage, target)
-	caster.heal(maxi(1, int(round(float(damage) * data.heal_ratio * (1.25 if GameManager.active_demon_id == &"demon_harbinger" else 1.0)))))
+	var evolution_heal_multiplier := 1.5 if evolved else 1.0
+	caster.heal(maxi(1, int(round(float(damage) * data.heal_ratio * evolution_heal_multiplier * (1.25 if GameManager.active_demon_id == &"demon_harbinger" else 1.0)))))
 	var beam := Line2D.new()
 	beam.points = PackedVector2Array([caster.global_position, target.global_position])
-	beam.width = 8.0
+	beam.width = 12.0 if evolved else 8.0
 	beam.default_color = Color("ff385f")
 	beam.begin_cap_mode = Line2D.LINE_CAP_ROUND
 	beam.end_cap_mode = Line2D.LINE_CAP_ROUND

@@ -6,7 +6,7 @@ signal profile_loaded
 signal save_completed
 
 const SAVE_PATH := "user://profile.save"
-const SAVE_VERSION := 2
+const SAVE_VERSION := 3
 
 var save_path_override: String = ""
 var balance_candidate_overrides: Dictionary = {}
@@ -27,24 +27,34 @@ func _ready() -> void:
 		load_profile()
 
 func load_profile() -> void:
+	_reset_defaults()
 	if not FileAccess.file_exists(_save_path()):
 		profile_loaded.emit()
 		return
 	var file := FileAccess.open(_save_path(), FileAccess.READ)
 	if file == null:
+		push_warning("Profile could not be opened; using a fresh profile.")
 		profile_loaded.emit()
 		return
 	var parsed = file.get_var()
-	if parsed is Dictionary:
-		currency = maxi(int(parsed.get("currency", 0)), 0)
-		unlocked_demons = _validated_unlocks(parsed.get("unlocked_demons", unlocked_demons), unlocked_demons)
-		unlocked_abilities = _validated_unlocks(parsed.get("unlocked_abilities", unlocked_abilities), unlocked_abilities)
-		unlocked_passives = _validated_unlocks(parsed.get("unlocked_passives", unlocked_passives), unlocked_passives)
-		lifetime_kills = maxi(int(parsed.get("lifetime_kills", 0)), 0)
-		lifetime_runs = maxi(int(parsed.get("lifetime_runs", 0)), 0)
-		lifetime_victories = maxi(int(parsed.get("lifetime_victories", 0)), 0)
-		lifetime_survival_seconds = maxi(int(parsed.get("lifetime_survival_seconds", 0)), 0)
-		selected_demon_id = StringName(parsed.get("selected_demon_id", "demon_summoner"))
+	if not parsed is Dictionary:
+		push_warning("Profile data is invalid; using a fresh profile.")
+		profile_loaded.emit()
+		return
+	var migrated := _migrate_profile(parsed as Dictionary)
+	currency = maxi(int(migrated.get("currency", currency)), 0)
+	unlocked_demons = _validated_unlocks(migrated.get("unlocked_demons", unlocked_demons), unlocked_demons, "demon")
+	unlocked_abilities = _validated_unlocks(migrated.get("unlocked_abilities", unlocked_abilities), unlocked_abilities, "ability")
+	unlocked_passives = _validated_unlocks(migrated.get("unlocked_passives", unlocked_passives), unlocked_passives, "passive")
+	lifetime_kills = maxi(int(migrated.get("lifetime_kills", lifetime_kills)), 0)
+	lifetime_runs = maxi(int(migrated.get("lifetime_runs", lifetime_runs)), 0)
+	lifetime_victories = maxi(int(migrated.get("lifetime_victories", lifetime_victories)), 0)
+	lifetime_survival_seconds = maxi(int(migrated.get("lifetime_survival_seconds", lifetime_survival_seconds)), 0)
+	selected_demon_id = StringName(migrated.get("selected_demon_id", "demon_summoner"))
+	if selected_demon_id not in unlocked_demons:
+		selected_demon_id = unlocked_demons[0] if not unlocked_demons.is_empty() else &"demon_summoner"
+	if int(parsed.get("version", 1)) < SAVE_VERSION:
+		save_profile()
 	profile_loaded.emit()
 
 func save_profile() -> void:
@@ -156,15 +166,41 @@ func _is_unlocked(unlock_id: StringName) -> bool:
 func _find_unlock(unlock_id: StringName) -> Dictionary:
 	return get_catalog().get("demons", {}).get(unlock_id, get_catalog().get("abilities", {}).get(unlock_id, get_catalog().get("passives", {}).get(unlock_id, {})))
 
-func _validated_unlocks(value: Variant, defaults: Array[StringName]) -> Array[StringName]:
+func _migrate_profile(parsed: Dictionary) -> Dictionary:
+	var migrated := parsed.duplicate(true)
+	var version := int(migrated.get("version", 1))
+	if version < 2:
+		# Version 1 used the same progression fields but did not persist a
+		# selected demon consistently.
+		migrated["selected_demon_id"] = migrated.get("selected_demon_id", "demon_summoner")
+	if version < 3:
+		# Version 3 validates catalog IDs and removes unsupported progression
+		# entries while preserving all known counters and unlocks.
+		migrated["version"] = SAVE_VERSION
+	if version > SAVE_VERSION:
+		push_warning("Profile version %d is newer than this build; known fields will be preserved." % version)
+	return migrated
+
+func _validated_unlocks(value: Variant, defaults: Array[StringName], kind: String) -> Array[StringName]:
 	var result: Array[StringName] = []
 	if value is Array:
 		for item in value:
-			result.append(StringName(item))
+			var id := StringName(item)
+			if _catalog_entry_kind(id) == kind and id not in result:
+				result.append(id)
 	for default_id in defaults:
-		if default_id not in result:
+		if _catalog_entry_kind(default_id) == kind and default_id not in result:
 			result.append(default_id)
 	return result
+
+func _catalog_entry_kind(id: StringName) -> String:
+	if RogueliteCatalog.demon_by_id(id) != null:
+		return "demon"
+	if RogueliteCatalog.ability_by_id(id) != null:
+		return "ability"
+	if RogueliteCatalog.passive_by_id(id) != null:
+		return "passive"
+	return ""
 
 func _ability_description(ability: AbilityData) -> String:
 	match ability.behavior_type:

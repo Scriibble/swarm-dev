@@ -12,7 +12,7 @@
 
 ## After that
 
-- [ ] Implement the eight planned evolved abilities and connect them to their upgrade offers.
+- [ ] Implement distinct Soul Furnace behavior and connect it to the Soul Drain evolution offer.
 - [ ] Show each upgrade's current rank and next effect in the level-up screen.
 - [ ] Decide whether XP should drop on the ground rather than go straight to the player.
 - [x] Add tests for starting a run, pausing, choosing an upgrade, losing, winning, and saving a reward.
@@ -33,6 +33,9 @@ The first implementation is in the working tree. The Obsidian notes live inside 
 - [x] Add a centered combat camera and keep the HUD anchored to the viewport.
 - [x] Add a persistent fullscreen/windowed preference.
 - [x] Add desktop export presets, application icon, and release smoke coverage.
+- [x] Add runtime navigation baking, enemy avoidance, and deterministic path validation.
+- [x] Add keyboard, D-pad, and controller focus navigation for Stronghold and paused upgrade menus.
+- [x] Add profile migration, catalog-ID validation, and corrupt-save recovery.
 - [ ] Install Godot export templates and test Windows, Linux, and macOS artifacts.
 - [ ] Complete the visual asset list in [[Art Assets]].
 - [ ] Add music and sound effects.

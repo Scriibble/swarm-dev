@@ -17,6 +17,10 @@ The game has a playable first slice. You can open the Infernal Stronghold, begin
 - The combat camera follows the demon through the full arena, and the HUD help text is anchored to the active viewport.
 - The Stronghold provides a persisted fullscreen/windowed display toggle.
 - Desktop export presets and a public-release smoke test cover Windows, Linux, and macOS.
+- The arena generator retries seeded layouts until the core, player start, and enemy entrances connect through a runtime-baked navigation map.
+- Enemies use navigation agents, obstacle clearance checks, avoidance, and stuck-path retries.
+- Stronghold and paused upgrade menus support keyboard, D-pad, and controller focus navigation, including return-to-Stronghold flow.
+- Profile loading migrates older save versions, filters invalid catalog IDs, and recovers from corrupt data.
 - The player scene owns an editor-visible demon `Sprite2D`; the reusable enemy scene owns an editor-visible soldier `Sprite2D` and swaps to the orc texture when spawned with orc data.
 
 ## Open work
@@ -32,13 +36,14 @@ The catalog lists eight abilities. All eight have runtime implementations:
 7. Imp Swarm, homing imp projectiles.
 8. Soul Drain, a damaging healing attack.
 
-The lifecycle integration test exercises all eight runtime classes. Balance and visual tuning continue. Some evolved forms share behavior or presentation.
+The lifecycle integration test covers all eight runtime classes. Seven evolved forms have distinct runtime behavior. Soul Furnace remains catalogued as an evolution, but Soul Drain keeps its base behavior after that choice.
 
 ## Next checks
 
 - Manually play a full ten-minute run and compare it with the deterministic balance suite.
 - Check the alternate demon loadouts and evolved abilities in the desktop build.
 - Run the five-seed demon review before changing the live demon configuration.
+- Run the navigation, enemy-routing, UI-focus, and profile-migration integration checks after changes to those systems.
 - Replace the placeholder core art and add stronger hit and death feedback.
 - Replace procedural ability, hazard, and obstacle visuals with finished art and VFX.
 - Add character animation sets, alternate demon identities, and Stronghold/upgrade UI art.

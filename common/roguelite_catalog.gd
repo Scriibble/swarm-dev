@@ -22,14 +22,13 @@ static func passive_data() -> Array[PassiveData]:
 		_passive(&"cooldown", "Quickened Flame", "Faster attack cooldown per rank.", &"cooldown", 0.04, 25, [&"cinder_step"]),
 		_passive(&"range", "Long Reach", "+25 attack range per rank.", &"range", 25.0, 25, [&"emberheart"]),
 		_passive(&"xp_gain", "Soul Siphon", "+10% XP per rank.", &"xp_gain", 0.10, 30, [&"core_ward"]),
-		_passive(&"pickup_radius", "Grave Magnet", "+35 pickup radius per rank.", &"pickup_radius", 35.0, 20, [&"cinder_step"]),
 		_passive(&"max_health", "Flesh of the Pit", "+20 maximum health per rank.", &"max_health", 20.0, 25, [&"emberheart"]),
 	]
 
 static func demon_data() -> Array[DemonData]:
 	return [
 		_demon(&"demon_summoner", "Ash Summoner", "Balanced mobile summoner.", 0, [], [&"ember_bolt"], [&"emberheart", &"cinder_step", &"core_ward"], {"xp_requirement_multiplier": 0.90}),
-		_demon(&"demon_bulwark", "Core Bulwark", "Defensive core guardian.", 50, [&"demon_summoner"], [&"core_pulse"], [&"core_ward", &"max_health", &"pickup_radius"], {"core_max_health": 30, "core_effectiveness": 1.15, "core_damage_multiplier": 0.08, "xp_requirement_multiplier": 0.95, "dual_core_pulse": true, "player_core_pulse_cooldown_multiplier": 0.5}),
+		_demon(&"demon_bulwark", "Core Bulwark", "Defensive core guardian.", 50, [&"demon_summoner"], [&"core_pulse"], [&"core_ward", &"max_health"], {"core_max_health": 30, "core_effectiveness": 1.15, "core_damage_multiplier": 0.08, "xp_requirement_multiplier": 0.95, "dual_core_pulse": true, "player_core_pulse_cooldown_multiplier": 0.5}),
 		_demon(&"demon_harbinger", "Blood Harbinger", "Aggressive close-range predator.", 75, [&"demon_summoner"], [&"blood_orbit"], [&"attack_damage", &"cooldown", &"xp_gain"], {"close_damage": 0.12, "drain_effectiveness": 1.25, "xp_requirement_multiplier": 1.10}),
 	]
 

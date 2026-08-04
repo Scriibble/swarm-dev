@@ -5,7 +5,7 @@ func _init() -> void:
 	var passives := RogueliteCatalog.passive_data()
 	var demons := RogueliteCatalog.demon_data()
 	assert(abilities.size() == 8, "Expected eight abilities")
-	assert(passives.size() == 9, "Expected nine passives")
+	assert(passives.size() == 8, "Expected eight supported passives")
 	assert(demons.size() == 3, "Expected three demons")
 	var expected_starting_abilities := {
 		&"demon_summoner": &"ember_bolt",
@@ -77,4 +77,8 @@ func _init() -> void:
 	print("roguelite smoke test passed: offers=%d obstacles=%d hazards=%d" % [offers.size(), generator_a.obstacle_cells.size(), generator_a.hazard_cells.size()])
 	parent_a.free()
 	parent_b.free()
+	call_deferred("_quit_after_navigation_cleanup")
+
+func _quit_after_navigation_cleanup() -> void:
+	await physics_frame
 	quit()

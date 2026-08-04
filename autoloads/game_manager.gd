@@ -119,6 +119,10 @@ func _xp_threshold_for_level(target_level: int) -> int:
 	return maxi(1, int(round(float(base_threshold) * float(demon_modifiers.get("xp_requirement_multiplier", 1.0)))))
 
 func choose_upgrade(upgrade: UpgradeData) -> void:
+	if run_state != RunState.LEVEL_UP or upgrade == null:
+		return
+	if upgrade not in current_offers:
+		return
 	if upgrade.offer_type == &"evolution":
 		if upgrade.target_id not in evolved_abilities:
 			evolved_abilities.append(upgrade.target_id)

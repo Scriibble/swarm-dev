@@ -35,8 +35,7 @@ func evaluate_run(demon_id: StringName, seed: int, overrides: Dictionary = {}) -
 	GameManager.forced_run_seed = seed
 	var main_scene := MAIN_SCENE.instantiate()
 	add_child(main_scene)
-	await get_tree().process_frame
-	await get_tree().process_frame
+	await _wait_for_world(main_scene)
 	var player: CharacterBody2D = main_scene.get("player")
 	var core: StaticBody2D = main_scene.get("core")
 	if player == null or core == null:
@@ -69,6 +68,12 @@ func evaluate_run(demon_id: StringName, seed: int, overrides: Dictionary = {}) -
 	await get_tree().process_frame
 	GameManager.forced_run_seed = -1
 	return _current_result
+
+func _wait_for_world(main_scene: Node) -> void:
+	for _frame in 180:
+		await get_tree().physics_frame
+		if main_scene.get("player") != null and main_scene.get("core") != null:
+			return
 
 func _autoplay_frame(main_scene: Node) -> void:
 	get_tree().paused = false

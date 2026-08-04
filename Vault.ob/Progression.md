@@ -22,9 +22,11 @@ Run upgrades disappear when you start again.
 |---|---|
 | Demons | Ash Summoner is free. Core Bulwark costs 50 Shards. Blood Harbinger costs 75. |
 | Abilities | Ember Bolt, Blood Orbit, and Core Pulse are free. Hellfire Field costs 25, Bone Spear 30, Chain Lash 35, Imp Swarm 40, and Soul Drain 45. |
-| Passives | Emberheart, Cinder Step, and Core Ward are free. Infernal Might costs 20, Quickened Flame 25, Long Reach 25, Soul Siphon 30, and Grave Magnet 20. |
+| Passives | Emberheart, Cinder Step, and Core Ward are free. Infernal Might costs 20, Quickened Flame 25, Long Reach 25, Soul Siphon 30, and Flesh of the Pit 25. |
 
 Some unlocks require another unlock first. The game saves purchases in `user://profile.save`.
+
+The current catalog has eight passive abilities. XP goes straight to the player, so the removed Grave Magnet entry has no active pickup-radius effect.
 
 Permanent progress changes which content you can start with. It does not raise your combat stats between runs.
 

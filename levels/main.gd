@@ -10,6 +10,7 @@ const WALLS_FLOOR: Texture2D = preload("res://tileset/free-2d-top-down-pixel-dun
 const ARENA_GENERATOR_SCRIPT = preload("res://features/arena/arena_generator.gd")
 const HAZARD_SCENE: PackedScene = preload("res://features/arena/hazard.tscn")
 const FEEDBACK_SCRIPT = preload("res://features/feedback/combat_feedback.gd")
+const MENU_FOCUS = preload("res://common/menu_focus_navigation.gd")
 const MAX_ACTIVE_ENEMIES := 60
 
 var player: CharacterBody2D
@@ -28,10 +29,10 @@ var wave_label: Label
 var upgrade_panel: PanelContainer
 var upgrade_list: VBoxContainer
 var start_button: Button
+var return_button: Button
 var reward_text: String = ""
 var feedback: CombatFeedback
-var _menu_navigation_cooldown := 0.0
-var _menu_accept_was_pressed := false
+var _leaving_run := false
 
 func _ready() -> void:
 	# The pause and level-up overlays must continue receiving controller input
@@ -53,7 +54,6 @@ func _ready() -> void:
 	GameManager.start_run.call_deferred()
 
 func _process(delta: float) -> void:
-	_update_controller_menu_input(delta)
 	if GameManager.run_state == GameManager.RunState.PLAYING:
 		GameManager.tick_run(delta)
 		spawn_timer -= delta
@@ -64,34 +64,28 @@ func _process(delta: float) -> void:
 			GameManager.finish_run(true)
 	_update_hud()
 
-func _input(event: InputEvent) -> void:
-	if not overlay.visible and not upgrade_panel.visible:
-		return
-	if event is InputEventJoypadButton and event.pressed and event.button_index == JOY_BUTTON_A:
-		var focused := get_viewport().gui_get_focus_owner()
-		if focused is BaseButton and not focused.disabled:
-			focused.emit_signal("pressed")
-			get_viewport().set_input_as_handled()
-		_menu_accept_was_pressed = true
-	elif event is InputEventJoypadMotion and event.axis in [JOY_AXIS_LEFT_X, JOY_AXIS_LEFT_Y] and _menu_navigation_cooldown <= 0.0:
-		var direction := Vector2(Input.get_joy_axis(event.device, JOY_AXIS_LEFT_X), Input.get_joy_axis(event.device, JOY_AXIS_LEFT_Y))
-		if direction.length_squared() > 0.42:
-			_move_controller_focus(direction.normalized())
-			_menu_navigation_cooldown = 0.22
-
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_cancel"):
+	if event.is_action_pressed("pause_game"):
 		if GameManager.run_state == GameManager.RunState.PLAYING:
 			GameManager.set_paused(true)
 		elif GameManager.run_state == GameManager.RunState.PAUSED:
 			GameManager.set_paused(false)
-		return
-	if not event.is_action_pressed("confirm"):
-		return
-	var focused := get_viewport().gui_get_focus_owner()
-	if focused is BaseButton and not focused.disabled:
-		focused.emit_signal("pressed")
 		get_viewport().set_input_as_handled()
+		return
+	if event.is_action_pressed("ui_cancel") and GameManager.run_state == GameManager.RunState.PAUSED:
+		GameManager.set_paused(false)
+		get_viewport().set_input_as_handled()
+		return
+	if GameManager.run_state == GameManager.RunState.PAUSED:
+		if MENU_FOCUS.handle_ui_input(event, [start_button, return_button]):
+			get_viewport().set_input_as_handled()
+		return
+	if GameManager.run_state == GameManager.RunState.LEVEL_UP:
+		if MENU_FOCUS.handle_ui_input(event, _upgrade_buttons()):
+			get_viewport().set_input_as_handled()
+		return
+	if GameManager.run_state != GameManager.RunState.PLAYING:
+		return
 
 func _build_world() -> void:
 	for child in get_children():
@@ -108,6 +102,8 @@ func _build_world() -> void:
 	arena_generator.name = "ArenaGenerator"
 	add_child(arena_generator)
 	arena_generator.generate(GameManager.run_seed, self, core.position)
+	if not await arena_generator.wait_for_navigation_ready():
+		push_error("Arena navigation failed to synchronize or validate for seed %d" % GameManager.run_seed)
 	player = PLAYER_SCENE.instantiate()
 	player.position = Vector2(720, 610)
 	add_child(player)
@@ -156,10 +152,14 @@ func _make_enemy_data(is_orc: bool) -> EnemyData:
 	return data
 
 func _on_run_started() -> void:
-	_build_world()
+	_leaving_run = false
 	overlay.visible = false
 	upgrade_panel.visible = false
-	set_process(true)
+	return_button.visible = false
+	set_process(false)
+	await _build_world()
+	if is_instance_valid(self) and GameManager.run_state == GameManager.RunState.PLAYING:
+		set_process(true)
 
 func _on_run_ended(victory: bool) -> void:
 	set_process(false)
@@ -167,6 +167,8 @@ func _on_run_ended(victory: bool) -> void:
 	status_label.text = ("HELLS DEFENDED" if victory else "THE HELLS HAVE FALLEN") + "\n" + reward_text + "\n" + GameManager.last_run_summary
 	status_label.modulate = Color("ffb52e") if victory else Color("ff5b70")
 	start_button.text = "RETURN TO STRONGHOLD"
+	return_button.visible = false
+	MENU_FOCUS.wire_linear([start_button])
 	start_button.grab_focus.call_deferred()
 
 func _on_run_paused(is_paused: bool) -> void:
@@ -174,9 +176,13 @@ func _on_run_paused(is_paused: bool) -> void:
 		overlay.visible = true
 		status_label.text = "PAUSED"
 		start_button.text = "RESUME"
+		return_button.visible = true
+		MENU_FOCUS.wire_linear([start_button, return_button])
 		start_button.grab_focus.call_deferred()
 	else:
 		overlay.visible = false
+		return_button.visible = false
+		MENU_FOCUS.wire_linear([start_button])
 
 func _on_xp_gained(_amount: int, _total: int) -> void:
 	pass
@@ -195,77 +201,29 @@ func _show_upgrade_choices(choices: Array[UpgradeData]) -> void:
 	for choice in choices:
 		var button := Button.new()
 		button.focus_mode = Control.FOCUS_ALL
-		button.add_to_group("controller_menu_option")
+		button.process_mode = Node.PROCESS_MODE_ALWAYS
 		button.text = "%s\n%s" % [choice.title, choice.description]
 		button.custom_minimum_size = Vector2(390, 62)
 		button.pressed.connect(_choose_upgrade.bind(choice))
 		upgrade_list.add_child(button)
+	MENU_FOCUS.wire_linear(_upgrade_buttons())
 	if upgrade_list.get_child_count() > 0:
 		(upgrade_list.get_child(0) as Button).grab_focus.call_deferred()
 
 func _choose_upgrade(upgrade: UpgradeData) -> void:
+	if GameManager.run_state != GameManager.RunState.LEVEL_UP or not is_instance_valid(player):
+		return
 	GameManager.choose_upgrade(upgrade)
 	player.apply_upgrade(upgrade)
 	get_tree().paused = false
 	upgrade_panel.visible = false
 
-func _update_controller_menu_input(delta: float) -> void:
-	if not overlay.visible and not upgrade_panel.visible:
-		_menu_accept_was_pressed = false
-		return
-	_menu_navigation_cooldown = maxf(_menu_navigation_cooldown - delta, 0.0)
-	var direction := _get_controller_menu_direction()
-	if direction.length_squared() > 0.42 and _menu_navigation_cooldown <= 0.0:
-		_move_controller_focus(direction.normalized())
-		_menu_navigation_cooldown = 0.22
-	var accept_pressed := false
-	for device in Input.get_connected_joypads():
-		if Input.is_joy_button_pressed(device, JOY_BUTTON_A):
-			accept_pressed = true
-			break
-	if accept_pressed and not _menu_accept_was_pressed:
-		var focused := get_viewport().gui_get_focus_owner()
-		if focused is BaseButton and not focused.disabled:
-			focused.emit_signal("pressed")
-	_menu_accept_was_pressed = accept_pressed
-
-func _get_controller_menu_direction() -> Vector2:
-	var strongest := Vector2.ZERO
-	var strongest_strength := 0.0
-	for device in Input.get_connected_joypads():
-		var direction := Vector2(Input.get_joy_axis(device, JOY_AXIS_LEFT_X), Input.get_joy_axis(device, JOY_AXIS_LEFT_Y))
-		if direction.length_squared() > strongest_strength:
-			strongest = direction
-			strongest_strength = direction.length_squared()
-	return strongest
-
-func _move_controller_focus(direction: Vector2) -> void:
-	var focused := get_viewport().gui_get_focus_owner() as Control
-	var options: Array[Control] = []
-	for node in get_tree().get_nodes_in_group("controller_menu_option"):
-		if node is Control and is_instance_valid(node) and node.visible and not node.disabled and node.focus_mode != Control.FOCUS_NONE:
-			options.append(node)
-	if options.is_empty():
-		return
-	if focused == null or not options.has(focused):
-		options[0].grab_focus()
-		return
-	var origin := focused.global_position + focused.size * 0.5
-	var best: Control
-	var best_score := INF
-	for option in options:
-		if option == focused:
-			continue
-		var offset: Vector2 = option.global_position + option.size * 0.5 - origin
-		var forward := offset.dot(direction)
-		if forward <= 4.0:
-			continue
-		var score := forward + absf(offset.cross(direction)) * 1.5
-		if score < best_score:
-			best = option
-			best_score = score
-	if best:
-		best.grab_focus()
+func _upgrade_buttons() -> Array[Control]:
+	var buttons: Array[Control] = []
+	for child in upgrade_list.get_children():
+		if child is Control:
+			buttons.append(child)
+	return buttons
 
 func _update_hud() -> void:
 	if not is_instance_valid(timer_label):
@@ -354,9 +312,19 @@ func _build_hud() -> void:
 	start_button.custom_minimum_size = Vector2(300, 54)
 	start_button.pressed.connect(_start_button_pressed)
 	center.add_child(start_button)
+	return_button = Button.new()
+	return_button.name = "ReturnButton"
+	return_button.focus_mode = Control.FOCUS_ALL
+	return_button.text = "RETURN TO STRONGHOLD"
+	return_button.custom_minimum_size = Vector2(300, 54)
+	return_button.pressed.connect(_return_to_stronghold_pressed)
+	return_button.visible = false
+	center.add_child(return_button)
+	MENU_FOCUS.wire_linear([start_button, return_button])
 	hud.add_child(overlay)
 	overlay.visible = true
 	upgrade_panel = PanelContainer.new()
+	upgrade_panel.process_mode = Node.PROCESS_MODE_ALWAYS
 	upgrade_panel.set_anchors_preset(Control.PRESET_CENTER)
 	upgrade_panel.position = Vector2(-230, -180)
 	upgrade_panel.size = Vector2(460, 360)
@@ -370,19 +338,30 @@ func _build_hud() -> void:
 	heading.add_theme_font_size_override("font_size", 22)
 	upgrade_box.add_child(heading)
 	upgrade_list = VBoxContainer.new()
+	upgrade_list.process_mode = Node.PROCESS_MODE_ALWAYS
 	upgrade_list.add_theme_constant_override("separation", 8)
 	upgrade_box.add_child(upgrade_list)
 	hud.add_child(upgrade_panel)
 	upgrade_panel.visible = false
 
 func _start_button_pressed() -> void:
+	if _leaving_run:
+		return
 	if GameManager.run_state == GameManager.RunState.PAUSED:
 		GameManager.set_paused(false)
 		return
 	if GameManager.run_state in [GameManager.RunState.VICTORY, GameManager.RunState.DEFEAT]:
-		get_tree().change_scene_to_file("res://levels/stronghold.tscn")
+		_return_to_stronghold_pressed()
 		return
 	GameManager.start_run()
+
+func _return_to_stronghold_pressed() -> void:
+	if _leaving_run:
+		return
+	_leaving_run = true
+	get_viewport().set_input_as_handled()
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://levels/stronghold.tscn")
 
 func _draw() -> void:
 	draw_rect(Rect2(0, 0, 1440, 940), Color("1a0d24"), true)

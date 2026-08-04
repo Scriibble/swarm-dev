@@ -11,6 +11,7 @@ Notes for Swarm-dev.
 - [[Progression]]: abilities, passives, unlocks, and rewards.
 - [[Backlog]]: the work that would make the next build stronger.
 - [[Art Assets]]: the exact visual assets needed.
+- [[Abilities]]: active abilities, passives, and evolved forms.
 - [[Verification Log]]: checks run against the project.
 
 ## The game

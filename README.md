@@ -11,9 +11,12 @@ A desktop-first Godot 4.7.1 fantasy swarm roguelite where a demon defends the he
 - XP level-ups with three upgrade choices.
 - Victory after the final champion event, or defeat when the demon or core dies.
 - Seeded obstacle and hazard layouts for each run.
+- Runtime-baked navigation cutouts with synchronized path validation, safe retries, and dense-enemy avoidance.
 - Infernal Stronghold with persistent Infernal Shards, unlocks, prerequisites, and demon selection.
 - Run-local ability/passive ranks, weighted offers, and evolution-ready synergies.
-- Automated smoke, lifecycle, persistence, ability, and ten-minute balance checks.
+- Godot UI focus navigation for keyboard, mouse, and controller menus, including paused upgrade choices.
+- Versioned profile migration and corrupt-profile recovery.
+- Automated smoke, navigation, lifecycle, persistence, ability, and ten-minute balance checks.
 - Desktop export presets for Windows, Linux, and macOS.
 
 ## Structure
@@ -31,6 +34,10 @@ See [ASSET_LICENSES.md](ASSET_LICENSES.md) for the current asset audit and relea
 ```text
 godot --headless --path . --script res://tests/roguelite_smoke.gd
 godot --headless --path . --scene res://tests/lifecycle_integration.tscn
+godot --headless --path . --scene res://tests/navigation_integration.tscn
+godot --headless --path . --scene res://tests/enemy_navigation_integration.tscn
+godot --headless --path . --scene res://tests/ui_focus_integration.tscn
+godot --headless --path . --scene res://tests/profile_migration_smoke.tscn
 godot --headless --path . --scene res://tests/balance_runner.tscn
 godot --headless --path . --scene res://tests/demon_balance_agent.tscn -- --review
 godot --headless --path . --script res://tests/demon_balance_config_smoke.gd
