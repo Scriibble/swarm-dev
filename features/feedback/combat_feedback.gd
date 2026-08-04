@@ -66,31 +66,26 @@ func _spawn_number(position: Vector2, amount: int, color: Color) -> void:
 func _spawn_burst(position: Vector2, color: Color, scale_amount: float) -> void:
 	if get_child_count() > 120:
 		return
-	var burst := Polygon2D.new()
-	burst.polygon = PackedVector2Array([Vector2(0, -12), Vector2(5, -5), Vector2(12, 0), Vector2(5, 5), Vector2(0, 12), Vector2(-5, 5), Vector2(-12, 0), Vector2(-5, -5)])
+	var burst := GeneratedArt.effect_sprite(&"impact_burst")
 	burst.position = position
-	burst.color = color
+	burst.modulate = color
 	burst.modulate.a = 0.85
 	burst.z_index = 19
 	add_child(burst)
 	var tween := burst.create_tween()
 	tween.set_parallel(true)
-	tween.tween_property(burst, "scale", Vector2.ONE * (2.0 + scale_amount), 0.22)
+	tween.tween_property(burst, "scale", Vector2.ONE * (0.7 + scale_amount * 0.45), 0.22)
 	tween.tween_property(burst, "modulate:a", 0.0, 0.22)
 	tween.chain().tween_callback(burst.queue_free)
 
 func _spawn_ring(position: Vector2, color: Color, radius: float) -> void:
 	if get_child_count() > 120:
 		return
-	var ring := Line2D.new()
-	var points := PackedVector2Array()
-	for index in 25:
-		points.append(Vector2.from_angle(float(index) / 24.0 * TAU) * radius)
-	ring.points = points
+	var ring := GeneratedArt.effect_sprite(&"evolution_burst" if color.b > color.r else &"core_pulse")
 	ring.position = position
-	ring.width = 3.0
-	ring.default_color = color
+	ring.modulate = color
 	ring.z_index = 18
+	ring.scale = Vector2.ONE * maxf(radius / 96.0, 0.8)
 	add_child(ring)
 	var tween := ring.create_tween()
 	tween.set_parallel(true)
@@ -101,15 +96,10 @@ func _spawn_ring(position: Vector2, color: Color, radius: float) -> void:
 func _spawn_pulse_ring(position: Vector2, color: Color, radius: float) -> void:
 	if get_child_count() > 120:
 		return
-	var ring := Line2D.new()
-	var points := PackedVector2Array()
-	for index in 33:
-		points.append(Vector2.from_angle(float(index) / 32.0 * TAU) * radius)
-	ring.points = points
+	var ring := GeneratedArt.effect_sprite(&"core_pulse")
 	ring.position = position
 	ring.scale = Vector2.ONE * 0.08
-	ring.width = 5.0
-	ring.default_color = color
+	ring.modulate = color
 	ring.modulate.a = 0.95
 	ring.z_index = 18
 	add_child(ring)

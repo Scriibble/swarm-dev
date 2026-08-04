@@ -25,15 +25,14 @@ func tick(delta: float) -> void:
 	EventBus.ability_activated.emit(data.id, caster.global_position)
 
 func _spawn_arc(from_point: Vector2, to_point: Vector2) -> void:
-	var arc := Line2D.new()
+	var arc := GeneratedArt.effect_sprite(&"chain_lash")
 	var midpoint := from_point.lerp(to_point, 0.5)
-	var perpendicular := from_point.direction_to(to_point).orthogonal() * (18.0 if evolved else 11.0)
-	arc.points = PackedVector2Array([from_point, midpoint + perpendicular, to_point])
-	arc.width = 5.0 if evolved else 3.0
-	arc.default_color = Color("b968ff") if evolved else Color("7b5cff")
-	arc.joint_mode = Line2D.LINE_JOINT_SHARP
+	var distance := from_point.distance_to(to_point)
+	arc.position = midpoint
+	arc.rotation = from_point.angle_to_point(to_point)
+	arc.scale = Vector2(maxf(distance / 72.0, 0.8), 0.8 if not evolved else 1.0)
 	arc.z_index = 8
 	caster.get_tree().current_scene.add_child(arc)
 	var tween := arc.create_tween()
-	tween.tween_property(arc, "modulate:a", 0.0, 0.18 if evolved else 0.12)
+	tween.tween_property(arc, "modulate:a", 0.0, 0.22 if evolved else 0.16)
 	tween.tween_callback(arc.queue_free)

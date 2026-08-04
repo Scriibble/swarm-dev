@@ -1,0 +1,13 @@
+{
+  "props": [
+    {"id":"obstacle-1","image":"assets/generated/props/infernal-arena/obstacle-a/prop.png","x":470,"y":300,"w":38,"h":48,"anchor":"center-bottom","sortY":300},
+    {"id":"obstacle-2","image":"assets/generated/props/infernal-arena/obstacle-b/prop.png","x":1060,"y":300,"w":38,"h":48,"anchor":"center-bottom","sortY":300},
+    {"id":"obstacle-3","image":"assets/generated/props/infernal-arena/obstacle-c/prop.png","x":520,"y":700,"w":38,"h":48,"anchor":"center-bottom","sortY":700},
+    {"id":"obstacle-4","image":"assets/generated/props/infernal-arena/obstacle-d/prop.png","x":1080,"y":700,"w":38,"h":48,"anchor":"center-bottom","sortY":700},
+    {"id":"rubble-1","image":"assets/generated/props/infernal-arena/rubble-a/prop.png","x":250,"y":400,"w":52,"h":42,"anchor":"center-bottom","sortY":400},
+    {"id":"rubble-2","image":"assets/generated/props/infernal-arena/rubble-b/prop.png","x":1200,"y":590,"w":52,"h":42,"anchor":"center-bottom","sortY":590},
+    {"id":"brazier-1","image":"assets/generated/props/infernal-arena/brazier-a/prop.png","x":720,"y":95,"w":32,"h":48,"anchor":"center-bottom","sortY":95},
+    {"id":"brazier-2","image":"assets/generated/props/infernal-arena/brazier-b/prop.png","x":720,"y":900,"w":32,"h":48,"anchor":"center-bottom","sortY":900},
+    {"id":"vent-1","image":"assets/generated/props/infernal-arena/vent/prop.png","x":270,"y":610,"w":42,"h":32,"anchor":"center-bottom","sortY":610}
+  ]
+}

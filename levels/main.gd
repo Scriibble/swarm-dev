@@ -3,10 +3,7 @@ extends Node2D
 const PLAYER_SCENE: PackedScene = preload("res://entities/player/player.tscn")
 const CORE_SCENE: PackedScene = preload("res://entities/core/hell_core.tscn")
 const ENEMY_SCENE: PackedScene = preload("res://entities/enemy/enemy.tscn")
-const DEMON_IDLE: Texture2D = preload("res://sprites/Tiny RPG Character Asset Pack 02 -Free Demon_A&Blood Monster_A/Characters(100x100 split)/Demon_A/Demon_A with shadows/Demon_A_Idle.png")
-const SOLDIER_IDLE: Texture2D = preload("res://sprites/Tiny RPG Character Asset Pack 01 v2.0 -Free Soldier&Orc/Characters(100x100 split)/Soldier/Soldier with shadows/Soldier_Idle.png")
-const ORC_IDLE: Texture2D = preload("res://sprites/Tiny RPG Character Asset Pack 01 v2.0 -Free Soldier&Orc/Characters(100x100 split)/Orc/Orc with shadows/Orc_Idle.png")
-const WALLS_FLOOR: Texture2D = preload("res://tileset/free-2d-top-down-pixel-dungeon-asset-pack/PNG/walls_floor.png")
+const ARENA_BACKGROUND: Texture2D = preload("res://assets/generated/map/infernal-arena-base.png")
 const ARENA_GENERATOR_SCRIPT = preload("res://features/arena/arena_generator.gd")
 const HAZARD_SCENE: PackedScene = preload("res://features/arena/hazard.tscn")
 const FEEDBACK_SCRIPT = preload("res://features/feedback/combat_feedback.gd")
@@ -120,9 +117,8 @@ func _make_enemy_data(is_orc: bool) -> EnemyData:
 	data.contact_damage = 12 if is_orc else 8
 	data.attack_interval = 1.25 if is_orc else 0.8
 	data.xp_value = 4 if is_orc else 3
-	data.texture = ORC_IDLE if is_orc else SOLDIER_IDLE
-	data.idle_frames = 6
-	data.scale = 0.68
+	data.animation_bundle = &"orc" if is_orc else &"human_soldier"
+	data.scale = 0.72
 	return data
 
 func _on_run_started() -> void:
@@ -282,15 +278,4 @@ func _start_button_pressed() -> void:
 	GameManager.start_run()
 
 func _draw() -> void:
-	draw_rect(Rect2(0, 0, 1440, 940), Color("1a0d24"), true)
-	draw_texture_rect(WALLS_FLOOR, Rect2(12, 64, 1416, 828), true, Color(0.72, 0.44, 0.82, 0.12))
-	for x in range(0, 1440, 48):
-		for y in range(52, 940, 48):
-			var shade := Color("25132e") if (int(x / 48) + int(y / 48)) % 2 == 0 else Color("21102a")
-			draw_rect(Rect2(x, y, 47, 47), shade, true)
-	for x in range(0, 1440, 48):
-		draw_rect(Rect2(x, 52, 48, 12), Color("3b1a49"), true)
-		draw_rect(Rect2(x, 892, 48, 48), Color("0e0915"), true)
-	for y in range(52, 940, 48):
-		draw_rect(Rect2(0, y, 12, 48), Color("0e0915"), true)
-		draw_rect(Rect2(1428, y, 12, 48), Color("0e0915"), true)
+	draw_texture_rect(ARENA_BACKGROUND, Rect2(0, 0, 1440, 940), false)

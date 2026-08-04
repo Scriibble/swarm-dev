@@ -5,10 +5,16 @@ extends Area2D
 @export var evolved: bool = false
 var _timer: float = 0.0
 var _phase: float = 0.0
+var _sprite: AnimatedSprite2D
+
+func _ready() -> void:
+	_sprite = $Visual as AnimatedSprite2D
+	_sprite.sprite_frames = GeneratedArt.effect_frames(&"hellfire_field")
+	_sprite.play("default")
+	_sprite.scale = Vector2.ONE * (1.15 if evolved else 0.95)
 
 func _physics_process(delta: float) -> void:
 	_phase += delta * (5.0 if evolved else 3.5)
-	queue_redraw()
 	if lifetime > 0.0:
 		lifetime -= delta
 		if lifetime <= 0.0:
@@ -26,9 +32,3 @@ func _physics_process(delta: float) -> void:
 			body.take_damage(damage)
 		elif body.has_method("take_damage") and body.is_in_group("enemies"):
 			body.take_damage(damage)
-
-func _draw() -> void:
-	var radius := 25.0 if evolved else 20.0
-	var color := Color("ffb52e", 0.8) if evolved else Color("ff713d", 0.65)
-	draw_arc(Vector2.ZERO, radius + sin(_phase) * 3.0, 0.0, TAU, 24, color, 2.0)
-	draw_arc(Vector2.ZERO, radius * 0.55, _phase, _phase + PI * 1.4, 16, Color("fff1a6", 0.75), 2.0)

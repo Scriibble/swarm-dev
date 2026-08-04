@@ -1,0 +1,1 @@
+Retro pixel-art ash_summoner death animation; consistent grounded character scale, stable feet line, centered body, no detached effects.

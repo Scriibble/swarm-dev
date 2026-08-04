@@ -1,0 +1,1 @@
+Retro pixel-art human_soldier death animation; consistent grounded character scale, stable feet line, centered body, no detached effects.

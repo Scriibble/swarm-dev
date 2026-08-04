@@ -1,0 +1,97 @@
+{
+  "base": "assets/generated/map/infernal-arena-base.png",
+  "placements": "data/infernal-arena-props.json",
+  "output": "assets/generated/map/infernal-arena-layered-preview.png",
+  "pasted": [
+    {
+      "id": "brazier-1",
+      "image": "assets/generated/props/infernal-arena/brazier-a/prop.png",
+      "left": 704,
+      "top": 47,
+      "w": 32,
+      "h": 48,
+      "sortY": 95,
+      "layer": "props"
+    },
+    {
+      "id": "obstacle-1",
+      "image": "assets/generated/props/infernal-arena/obstacle-a/prop.png",
+      "left": 451,
+      "top": 252,
+      "w": 38,
+      "h": 48,
+      "sortY": 300,
+      "layer": "props"
+    },
+    {
+      "id": "obstacle-2",
+      "image": "assets/generated/props/infernal-arena/obstacle-b/prop.png",
+      "left": 1041,
+      "top": 252,
+      "w": 38,
+      "h": 48,
+      "sortY": 300,
+      "layer": "props"
+    },
+    {
+      "id": "rubble-1",
+      "image": "assets/generated/props/infernal-arena/rubble-a/prop.png",
+      "left": 224,
+      "top": 358,
+      "w": 52,
+      "h": 42,
+      "sortY": 400,
+      "layer": "props"
+    },
+    {
+      "id": "rubble-2",
+      "image": "assets/generated/props/infernal-arena/rubble-b/prop.png",
+      "left": 1174,
+      "top": 548,
+      "w": 52,
+      "h": 42,
+      "sortY": 590,
+      "layer": "props"
+    },
+    {
+      "id": "vent-1",
+      "image": "assets/generated/props/infernal-arena/vent/prop.png",
+      "left": 249,
+      "top": 578,
+      "w": 42,
+      "h": 32,
+      "sortY": 610,
+      "layer": "props"
+    },
+    {
+      "id": "obstacle-3",
+      "image": "assets/generated/props/infernal-arena/obstacle-c/prop.png",
+      "left": 501,
+      "top": 652,
+      "w": 38,
+      "h": 48,
+      "sortY": 700,
+      "layer": "props"
+    },
+    {
+      "id": "obstacle-4",
+      "image": "assets/generated/props/infernal-arena/obstacle-d/prop.png",
+      "left": 1061,
+      "top": 652,
+      "w": 38,
+      "h": 48,
+      "sortY": 700,
+      "layer": "props"
+    },
+    {
+      "id": "brazier-2",
+      "image": "assets/generated/props/infernal-arena/brazier-b/prop.png",
+      "left": 704,
+      "top": 852,
+      "w": 32,
+      "h": 48,
+      "sortY": 900,
+      "layer": "props"
+    }
+  ]
+}

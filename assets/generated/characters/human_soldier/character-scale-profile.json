@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "name": "human_soldier",
+  "processing": {
+    "cell_size": 128,
+    "fit_scale": 0.82,
+    "trim_border": 4,
+    "edge_clean_depth": 3,
+    "align": "feet",
+    "shared_scale": false,
+    "scale_strategy": "preserve",
+    "component_mode": "largest",
+    "component_padding": 0,
+    "min_component_area": 1,
+    "edge_touch_margin": 0
+  },
+  "output_origin": [
+    64.0,
+    117
+  ],
+  "reference": {
+    "target": "creature",
+    "mode": "idle",
+    "rows": 2,
+    "cols": 2,
+    "body_scale_mean": 0.23188324303521082,
+    "body_scale_cv": 0.009345731389365243,
+    "anchor_y_mean": 0.7057471264367816
+  },
+  "qc": {
+    "max_body_scale_drift": 0.1
+  }
+}

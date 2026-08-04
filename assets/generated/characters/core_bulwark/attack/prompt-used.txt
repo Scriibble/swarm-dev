@@ -1,0 +1,1 @@
+Retro pixel-art core_bulwark attack animation; consistent grounded character scale, stable feet line, centered body, no detached effects.

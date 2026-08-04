@@ -5,6 +5,7 @@ const CELL_SIZE := 48
 const GRID_SIZE := Vector2i(30, 18)
 const WORLD_ORIGIN := Vector2(24, 76)
 const HAZARD_SCENE: PackedScene = preload("res://features/arena/hazard.tscn")
+const GENERATED_ART = preload("res://common/generated_art.gd")
 
 var grid := AStarGrid2D.new()
 var spawn_points: Array[Vector2] = []
@@ -103,22 +104,11 @@ func _add_obstacle(parent: Node2D, center: Vector2) -> void:
 	rectangle.size = Vector2(32, 32)
 	shape.shape = rectangle
 	body.add_child(shape)
-	var visual := Polygon2D.new()
-	visual.polygon = PackedVector2Array([-22, -22, 22, -22, 22, 22, -22, 22])
-	visual.color = Color("63346d")
+	var prop_ids := [&"obstacle-a", &"obstacle-b", &"obstacle-c", &"obstacle-d"]
+	var visual := GENERATED_ART.prop_sprite(prop_ids[abs(int(center.x + center.y)) % prop_ids.size()])
+	visual.scale = Vector2.ONE * 0.17
+	visual.z_index = 1
 	body.add_child(visual)
-	var inner := Polygon2D.new()
-	inner.polygon = PackedVector2Array([-16, -16, 16, -16, 16, 16, -16, 16])
-	inner.color = Color("3b1c48")
-	body.add_child(inner)
-	var outline := Line2D.new()
-	outline.points = PackedVector2Array([
-		Vector2(-22, -22), Vector2(22, -22), Vector2(22, 22), Vector2(-22, 22), Vector2(-22, -22)
-	])
-	outline.width = 2.0
-	outline.default_color = Color("c36bd0")
-	outline.antialiased = false
-	body.add_child(outline)
 	parent.add_child(body)
 
 func _add_hazard(parent: Node2D, center: Vector2, damage: int) -> void:

@@ -11,7 +11,7 @@ const BONE_SPEAR_RUNTIME = preload("res://features/abilities/bone_spear_runtime.
 const CHAIN_LASH_RUNTIME = preload("res://features/abilities/chain_lash_runtime.gd")
 const SOUL_DRAIN_RUNTIME = preload("res://features/abilities/soul_drain_runtime.gd")
 const IMP_SWARM_RUNTIME = preload("res://features/abilities/imp_swarm_runtime.gd")
-const DEMON_IDLE: Texture2D = preload("res://sprites/Tiny RPG Character Asset Pack 02 -Free Demon_A&Blood Monster_A/Characters(100x100 split)/Demon_A/Demon_A with shadows/Demon_A_Idle.png")
+const GENERATED_ART = preload("res://common/generated_art.gd")
 
 @export var max_health: int = 100
 @export var move_speed: float = 145.0
@@ -22,17 +22,19 @@ var core_pulse_damage: int = 14
 var cooldown_bonus: float = 0.0
 var attack_range: float = 180.0
 var last_direction := Vector2.RIGHT
-var _sprite: Sprite2D
+var _sprite: AnimatedSprite2D
 var _camera: Camera2D
 var ability_runtimes: Dictionary = {}
+var _animation_lock: float = 0.0
+var _dead: bool = false
 
 func _ready() -> void:
 	health = max_health
-	_sprite = Sprite2D.new()
-	_sprite.texture = DEMON_IDLE
-	_sprite.hframes = 6
+	_sprite = GENERATED_ART.character_sprite(_demon_animation_bundle())
 	_sprite.scale = Vector2.ONE * 0.72
 	add_child(_sprite)
+	_sprite.animation_finished.connect(_on_animation_finished)
+	EventBus.ability_activated.connect(_on_ability_activated)
 	_camera = Camera2D.new()
 	_camera.position_smoothing_enabled = true
 	_camera.position_smoothing_speed = 6.0
@@ -50,6 +52,7 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, move_speed * 8.0 * delta)
 	move_and_slide()
+	_animation_lock = maxf(_animation_lock - delta, 0.0)
 	global_position.x = clampf(global_position.x, 80.0, 1360.0)
 	global_position.y = clampf(global_position.y, 80.0, 860.0)
 	var mouse_offset := get_global_mouse_position() - global_position
@@ -59,6 +62,7 @@ func _physics_process(delta: float) -> void:
 		last_direction = input_vector.normalized()
 	for runtime in ability_runtimes.values():
 		runtime.tick(delta)
+	_update_animation(input_vector)
 	queue_redraw()
 
 func take_damage(amount: int) -> void:
@@ -67,6 +71,11 @@ func take_damage(amount: int) -> void:
 	health = maxi(health - amount, 0)
 	health_changed.emit(health, max_health)
 	EventBus.combat_feedback.emit(global_position, amount, &"player_hit")
+	if health == 0:
+		_dead = true
+		_play_action(&"death")
+	else:
+		_play_action(&"hurt")
 	_flash_sprite(Color("ff405b"))
 	if health == 0:
 		died.emit()
@@ -93,6 +102,36 @@ func _flash_sprite(color: Color) -> void:
 	_sprite.modulate = color
 	var tween := _sprite.create_tween()
 	tween.tween_property(_sprite, "modulate", Color.WHITE, 0.12)
+
+func _demon_animation_bundle() -> StringName:
+	match GameManager.active_demon_id:
+		&"demon_bulwark": return &"core_bulwark"
+		&"demon_harbinger": return &"blood_harbinger"
+		_: return &"ash_summoner"
+
+func _on_ability_activated(_ability_id: StringName, _position: Vector2) -> void:
+	if not _dead:
+		_play_action(&"attack")
+
+func _update_animation(input_vector: Vector2) -> void:
+	if _dead or _animation_lock > 0.0:
+		return
+	if _sprite.animation in [&"attack", &"hurt"] and _sprite.is_playing():
+		return
+	_play_action(&"walk" if input_vector.length_squared() > 0.01 else &"idle")
+
+func _play_action(action: StringName) -> void:
+	if _sprite == null or (_dead and action != &"death"):
+		return
+	if action == &"attack" and _animation_lock > 0.0:
+		return
+	_sprite.play(action)
+	if action == &"attack":
+		_animation_lock = 0.18
+
+func _on_animation_finished() -> void:
+	if not _dead:
+		_update_animation(Input.get_vector("move_left", "move_right", "move_up", "move_down"))
 
 func apply_upgrade(upgrade: UpgradeData) -> void:
 	if upgrade.offer_type == &"evolution":

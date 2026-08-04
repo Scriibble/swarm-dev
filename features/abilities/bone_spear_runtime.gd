@@ -12,5 +12,6 @@ func tick(delta: float) -> void:
 	caster.get_tree().current_scene.add_child(projectile)
 	var color := Color("f7f1ff") if evolved else Color("d8d4ec")
 	projectile.setup_extended(caster.global_position + direction * 24.0, direction, scaled_damage(), 5 if evolved else data.pierce_count + 1, color, 500.0 if evolved else 440.0, 1.0, 1.65 if evolved else 1.15, Color("b968ff", 0.7))
+	projectile.set_effect_id(&"bone_spear")
 	cooldown = scaled_cooldown()
 	EventBus.ability_activated.emit(data.id, caster.global_position)

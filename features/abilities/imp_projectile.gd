@@ -6,18 +6,22 @@ var damage: int = 8
 var lifetime: float = 2.5
 var source: Node2D
 var phase: float = 0.0
+var _sprite: AnimatedSprite2D
+
+func _ready() -> void:
+	_sprite = $Visual as AnimatedSprite2D
+	_sprite.sprite_frames = GeneratedArt.effect_frames(&"imp_swarm")
+	_sprite.play("default")
 
 func setup(origin: Vector2, source_node: Node2D, damage_amount: int, color: Color) -> void:
 	global_position = origin
 	source = source_node
 	damage = damage_amount
-	$Visual.color = color
-	queue_redraw()
+	_sprite.modulate = color
 
 func _physics_process(delta: float) -> void:
 	lifetime -= delta
 	phase += delta * 8.0
-	queue_redraw()
 	if lifetime <= 0.0:
 		queue_free()
 		return
@@ -39,8 +43,3 @@ func _physics_process(delta: float) -> void:
 			body.take_damage(damage)
 			queue_free()
 			return
-
-func _draw() -> void:
-	var pulse := 1.0 + sin(phase) * 0.12
-	draw_circle(Vector2.ZERO, 7.0 * pulse, Color("a44dff", 0.22))
-	draw_circle(Vector2.ZERO, 3.0, Color("ffe1ff"))

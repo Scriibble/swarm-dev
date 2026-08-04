@@ -1,0 +1,393 @@
+{
+  "input": "assets/generated/raw/props/infernal_arena_compact_props.png",
+  "rows": 3,
+  "cols": 3,
+  "threshold": 100,
+  "edge_threshold": 150,
+  "component_mode": "largest",
+  "component_padding": 8,
+  "min_component_area": 100,
+  "edge_touch_margin": 0,
+  "accepted": [
+    {
+      "index": 0,
+      "label": "obstacle-a",
+      "grid": [
+        0,
+        0
+      ],
+      "source_box": [
+        0,
+        0,
+        418,
+        418
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 43041,
+      "selected_component_bbox": [
+        153,
+        104,
+        336,
+        342
+      ],
+      "crop_bbox": [
+        153,
+        104,
+        336,
+        342
+      ],
+      "padded_crop_bbox": [
+        145,
+        96,
+        344,
+        350
+      ],
+      "edge_touch": false,
+      "output_size": [
+        199,
+        254
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/obstacle-a/prop.png"
+    },
+    {
+      "index": 1,
+      "label": "obstacle-b",
+      "grid": [
+        0,
+        1
+      ],
+      "source_box": [
+        418,
+        0,
+        836,
+        418
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 50986,
+      "selected_component_bbox": [
+        107,
+        95,
+        307,
+        353
+      ],
+      "crop_bbox": [
+        107,
+        95,
+        307,
+        353
+      ],
+      "padded_crop_bbox": [
+        99,
+        87,
+        315,
+        361
+      ],
+      "edge_touch": false,
+      "output_size": [
+        216,
+        274
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/obstacle-b/prop.png"
+    },
+    {
+      "index": 2,
+      "label": "obstacle-c",
+      "grid": [
+        0,
+        2
+      ],
+      "source_box": [
+        836,
+        0,
+        1254,
+        418
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 44532,
+      "selected_component_bbox": [
+        70,
+        104,
+        255,
+        347
+      ],
+      "crop_bbox": [
+        70,
+        104,
+        255,
+        347
+      ],
+      "padded_crop_bbox": [
+        62,
+        96,
+        263,
+        355
+      ],
+      "edge_touch": false,
+      "output_size": [
+        201,
+        259
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/obstacle-c/prop.png"
+    },
+    {
+      "index": 3,
+      "label": "obstacle-d",
+      "grid": [
+        1,
+        0
+      ],
+      "source_box": [
+        0,
+        418,
+        418,
+        836
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 39900,
+      "selected_component_bbox": [
+        150,
+        89,
+        329,
+        314
+      ],
+      "crop_bbox": [
+        150,
+        89,
+        329,
+        314
+      ],
+      "padded_crop_bbox": [
+        142,
+        81,
+        337,
+        322
+      ],
+      "edge_touch": false,
+      "output_size": [
+        195,
+        241
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/obstacle-d/prop.png"
+    },
+    {
+      "index": 4,
+      "label": "rubble-a",
+      "grid": [
+        1,
+        1
+      ],
+      "source_box": [
+        418,
+        418,
+        836,
+        836
+      ],
+      "component_mode": "largest",
+      "component_count": 7,
+      "selected_component_area": 24719,
+      "selected_component_bbox": [
+        69,
+        119,
+        295,
+        302
+      ],
+      "crop_bbox": [
+        69,
+        119,
+        295,
+        302
+      ],
+      "padded_crop_bbox": [
+        61,
+        111,
+        303,
+        310
+      ],
+      "edge_touch": false,
+      "output_size": [
+        242,
+        199
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/rubble-a/prop.png"
+    },
+    {
+      "index": 5,
+      "label": "rubble-b",
+      "grid": [
+        1,
+        2
+      ],
+      "source_box": [
+        836,
+        418,
+        1254,
+        836
+      ],
+      "component_mode": "largest",
+      "component_count": 6,
+      "selected_component_area": 30188,
+      "selected_component_bbox": [
+        32,
+        93,
+        276,
+        306
+      ],
+      "crop_bbox": [
+        32,
+        93,
+        276,
+        306
+      ],
+      "padded_crop_bbox": [
+        24,
+        85,
+        284,
+        314
+      ],
+      "edge_touch": false,
+      "output_size": [
+        260,
+        229
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/rubble-b/prop.png"
+    },
+    {
+      "index": 6,
+      "label": "brazier-a",
+      "grid": [
+        2,
+        0
+      ],
+      "source_box": [
+        0,
+        836,
+        418,
+        1254
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 23762,
+      "selected_component_bbox": [
+        159,
+        55,
+        311,
+        267
+      ],
+      "crop_bbox": [
+        159,
+        55,
+        311,
+        267
+      ],
+      "padded_crop_bbox": [
+        151,
+        47,
+        319,
+        275
+      ],
+      "edge_touch": false,
+      "output_size": [
+        168,
+        228
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/brazier-a/prop.png"
+    },
+    {
+      "index": 7,
+      "label": "brazier-b",
+      "grid": [
+        2,
+        1
+      ],
+      "source_box": [
+        418,
+        836,
+        836,
+        1254
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 25832,
+      "selected_component_bbox": [
+        107,
+        70,
+        284,
+        266
+      ],
+      "crop_bbox": [
+        107,
+        70,
+        284,
+        266
+      ],
+      "padded_crop_bbox": [
+        99,
+        62,
+        292,
+        274
+      ],
+      "edge_touch": false,
+      "output_size": [
+        193,
+        212
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/brazier-b/prop.png"
+    },
+    {
+      "index": 8,
+      "label": "vent",
+      "grid": [
+        2,
+        2
+      ],
+      "source_box": [
+        836,
+        836,
+        1254,
+        1254
+      ],
+      "component_mode": "largest",
+      "component_count": 1,
+      "selected_component_area": 31393,
+      "selected_component_bbox": [
+        60,
+        93,
+        245,
+        264
+      ],
+      "crop_bbox": [
+        60,
+        93,
+        245,
+        264
+      ],
+      "padded_crop_bbox": [
+        52,
+        85,
+        253,
+        272
+      ],
+      "edge_touch": false,
+      "output_size": [
+        201,
+        187
+      ],
+      "status": "accepted",
+      "image": "assets/generated/props/infernal-arena/vent/prop.png"
+    }
+  ],
+  "rejected": [],
+  "edge_touch_props": []
+}

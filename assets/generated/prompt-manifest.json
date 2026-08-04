@@ -1,0 +1,15 @@
+{
+  "source_style": "existing supplied dungeon and character sprite packs, reinterpreted as original retro-pixel art",
+  "background": "Foundation-only 1440x940 top-down infernal basalt arena with dark violet stone, ember seams, open lanes, and no runtime objects.",
+  "dressed_reference": "Same arena framing with sparse natural basalt obstacles, rubble, braziers, vents, and central demonic altar; no annotations.",
+  "character_actions": {
+    "idle": "2x2 four-frame grounded idle sheet; central safe area, stable feet anchor, pure magenta background.",
+    "walk": "2x3 six-frame grounded walk sheet; stable camera, scale, and feet anchor, pure magenta background.",
+    "attack": "2x2 four-frame compact attack sheet; body action only where possible, pure magenta background.",
+    "hurt": "2x2 four-frame readable hurt/recoil sheet, pure magenta background.",
+    "death": "2x3 six-frame death sheet with readable collapse and stable root, pure magenta background."
+  },
+  "character_bundles": ["ash_summoner", "core_bulwark", "blood_harbinger", "human_soldier", "orc"],
+  "effects": ["ember_bolt", "bone_spear", "imp_swarm", "blood_orbit", "hellfire_field", "chain_lash", "soul_drain", "core_pulse", "impact_burst", "evolution_burst"],
+  "processing": "Generated raw sheets were chroma-keyed, frame-extracted, aligned, and QC-checked with the generate2dsprite and generate2dmap processors."
+}

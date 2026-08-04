@@ -1,0 +1,18 @@
+{
+  "style": "retro_pixel",
+  "map_size": [1440, 940],
+  "character_bundles": {
+    "ash_summoner": ["idle", "walk", "attack", "hurt", "death"],
+    "core_bulwark": ["idle", "walk", "attack", "hurt", "death"],
+    "blood_harbinger": ["idle", "walk", "attack", "hurt", "death"],
+    "human_soldier": ["idle", "walk", "attack", "hurt", "death"],
+    "orc": ["idle", "walk", "attack", "hurt", "death"]
+  },
+  "effects": ["ember_bolt", "bone_spear", "imp_swarm", "blood_orbit", "hellfire_field", "chain_lash", "soul_drain", "core_pulse", "impact_burst", "evolution_burst"],
+  "map": {
+    "base": "map/infernal-arena-base.png",
+    "dressed_reference": "map/infernal-arena-dressed-reference.png",
+    "props": "props/infernal-arena/prop-pack.json",
+    "core": "core/processed/single-1.png"
+  }
+}

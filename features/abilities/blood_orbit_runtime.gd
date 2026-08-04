@@ -2,8 +2,12 @@ class_name BloodOrbitRuntime
 extends AbilityRuntime
 
 var orbit_angle: float = 0.0
+var _orb_sprite: AnimatedSprite2D
 
 func _ready() -> void:
+	_orb_sprite = GeneratedArt.effect_sprite(&"blood_orbit")
+	_orb_sprite.scale = Vector2.ONE * 0.5
+	add_child(_orb_sprite)
 	queue_redraw()
 
 func tick(delta: float) -> void:
@@ -28,7 +32,8 @@ func _draw() -> void:
 	var radius := 34.0 + float(rank) * 3.0
 	draw_arc(Vector2.ZERO, radius, 0.0, TAU, 32, Color(0.55, 0.08, 0.22, 0.42), 2.0)
 	var orb_position := Vector2.from_angle(orbit_angle) * radius
-	draw_circle(orb_position, 8.0 if evolved else 6.0, Color("ff385f") if evolved else Color("b52f63"))
-	draw_circle(orb_position, 3.0, Color("ffd1d9"))
+	if _orb_sprite:
+		_orb_sprite.position = orb_position
+		_orb_sprite.scale = Vector2.ONE * (0.62 if evolved else 0.5)
 	if evolved:
 		draw_arc(Vector2.ZERO, radius + 9.0, -orbit_angle, -orbit_angle + PI * 1.35, 18, Color("ffb52e", 0.8), 2.0)

@@ -8,6 +8,5 @@ extends Resource
 @export var contact_damage: int = 5
 @export var attack_interval: float = 1.0
 @export var xp_value: int = 2
-@export var texture: Texture2D
-@export var idle_frames: int = 6
-@export var scale: float = 0.65
+@export var animation_bundle: StringName = &"human_soldier"
+@export var scale: float = 0.72
