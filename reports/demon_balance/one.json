@@ -1,0 +1,414 @@
+{
+	"baseline_runs": [
+		{
+			"ability_activations": {
+				"ember_bolt": 599
+			},
+			"ability_damage": {
+				"ember_bolt": 1368
+			},
+			"core_health_ratio": 0.69595567867036,
+			"demon_health_ratio": 0.91996,
+			"demon_id": "demon_summoner",
+			"evolutions": [],
+			"first_level_seconds": 138.125769666667,
+			"kills": 40,
+			"kills_per_minute": 3.98946402719375,
+			"level": 2,
+			"reward_shards": 49,
+			"runtime_errors": [],
+			"seed": 71001,
+			"survival_seconds": 601.584569666667,
+			"upgrades": [
+				"ember_bolt"
+			],
+			"victory": true
+		},
+		{
+			"ability_activations": {
+				"blood_orbit": 343,
+				"core_pulse": 500,
+				"ember_bolt": 547
+			},
+			"ability_damage": {
+				"blood_orbit": 5824,
+				"core_pulse": 46520,
+				"ember_bolt": 2596
+			},
+			"core_health_ratio": 0.993815571507454,
+			"demon_health_ratio": 0.96616,
+			"demon_id": "demon_bulwark",
+			"evolutions": [
+				"inferno_bolt",
+				"inferno_bolt",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"inferno_bolt",
+				"inferno_bolt",
+				"inferno_bolt",
+				"cataclysm_pulse"
+			],
+			"first_level_seconds": 52.5738133333332,
+			"kills": 1624,
+			"kills_per_minute": 162.363572830416,
+			"level": 26,
+			"reward_shards": 211,
+			"runtime_errors": [],
+			"seed": 71001,
+			"survival_seconds": 600.134613333333,
+			"upgrades": [
+				"ember_bolt",
+				"emberheart",
+				"ember_bolt",
+				"blood_orbit",
+				"blood_orbit",
+				"core_pulse",
+				"ember_bolt",
+				"ember_bolt",
+				"ember_bolt",
+				"core_pulse",
+				"inferno_bolt",
+				"core_pulse",
+				"core_pulse",
+				"blood_orbit",
+				"inferno_bolt",
+				"blood_orbit",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"inferno_bolt",
+				"inferno_bolt",
+				"inferno_bolt",
+				"emberheart",
+				"cataclysm_pulse"
+			],
+			"victory": true
+		},
+		{
+			"ability_activations": {
+				"blood_orbit": 137,
+				"ember_bolt": 310
+			},
+			"ability_damage": {
+				"blood_orbit": 1096,
+				"ember_bolt": 864
+			},
+			"core_health_ratio": 0.906333333333333,
+			"demon_health_ratio": 0.92608,
+			"demon_id": "demon_harbinger",
+			"evolutions": [],
+			"first_level_seconds": 281.02714,
+			"kills": 60,
+			"kills_per_minute": 5.96988055960466,
+			"level": 3,
+			"reward_shards": 55,
+			"runtime_errors": [],
+			"seed": 71001,
+			"survival_seconds": 603.02714,
+			"upgrades": [
+				"ember_bolt",
+				"emberheart"
+			],
+			"victory": true
+		}
+	],
+	"baseline_summary": {
+		"demons": {
+			"demon_bulwark": {
+				"median_core_health_ratio": 0.993815571507454,
+				"median_demon_health_ratio": 0.96616,
+				"median_first_level_seconds": 52.5738133333332,
+				"median_kills_per_minute": 162.363572830416,
+				"median_level": 26.0,
+				"median_survival_seconds": 600.134613333333,
+				"role_metrics": {
+					"close_damage_proxy": 5824,
+					"core_defense_proxy": 0.993815571507454,
+					"unique_abilities": 3
+				},
+				"runs": 1,
+				"total_ability_activations": 1390,
+				"total_ability_damage": 54940,
+				"victory_rate": 1.0,
+				"weighted_score": 99.5744424615007,
+				"wins": 1,
+				"worst_survival_seconds": 600.134613333333
+			},
+			"demon_harbinger": {
+				"median_core_health_ratio": 0.906333333333333,
+				"median_demon_health_ratio": 0.92608,
+				"median_first_level_seconds": 281.02714,
+				"median_kills_per_minute": 5.96988055960466,
+				"median_level": 3.0,
+				"median_survival_seconds": 603.02714,
+				"role_metrics": {
+					"close_damage_proxy": 1096,
+					"core_defense_proxy": 0.906333333333333,
+					"unique_abilities": 2
+				},
+				"runs": 1,
+				"total_ability_activations": 447,
+				"total_ability_damage": 1960,
+				"victory_rate": 1.0,
+				"weighted_score": 93.7339308333333,
+				"wins": 1,
+				"worst_survival_seconds": 603.02714
+			},
+			"demon_summoner": {
+				"median_core_health_ratio": 0.69595567867036,
+				"median_demon_health_ratio": 0.91996,
+				"median_first_level_seconds": 138.125769666667,
+				"median_kills_per_minute": 3.98946402719375,
+				"median_level": 2.0,
+				"median_survival_seconds": 601.584569666667,
+				"role_metrics": {
+					"close_damage_proxy": 0,
+					"core_defense_proxy": 0.69595567867036,
+					"unique_abilities": 1
+				},
+				"runs": 1,
+				"total_ability_activations": 599,
+				"total_ability_damage": 1368,
+				"victory_rate": 1.0,
+				"weighted_score": 90.2185589161665,
+				"wins": 1,
+				"worst_survival_seconds": 601.584569666667
+			}
+		},
+		"ranking": [
+			{
+				"demon_id": "demon_bulwark",
+				"weighted_score": 99.5744424615007
+			},
+			{
+				"demon_id": "demon_harbinger",
+				"weighted_score": 93.7339308333333
+			},
+			{
+				"demon_id": "demon_summoner",
+				"weighted_score": 90.2185589161665
+			}
+		],
+		"score_spread": 9.35588354533417,
+		"strongest": "demon_bulwark",
+		"weakest": "demon_summoner"
+	},
+	"criteria": {
+		"maximum_weighted_score_spread": 15.0,
+		"minimum_survival_fraction_of_best": 0.9,
+		"minimum_victory_rate": 0.8,
+		"role_policy": "Bulwark core defense, Harbinger close damage/sustain, Summoner flexibility"
+	},
+	"generated_at": "2026-08-01T16:22:02",
+	"mode": "review",
+	"seeds": [
+		71001
+	],
+	"selected_overrides": {},
+	"selected_runs": [
+		{
+			"ability_activations": {
+				"ember_bolt": 599
+			},
+			"ability_damage": {
+				"ember_bolt": 1368
+			},
+			"core_health_ratio": 0.69595567867036,
+			"demon_health_ratio": 0.91996,
+			"demon_id": "demon_summoner",
+			"evolutions": [],
+			"first_level_seconds": 138.125769666667,
+			"kills": 40,
+			"kills_per_minute": 3.98946402719375,
+			"level": 2,
+			"reward_shards": 49,
+			"runtime_errors": [],
+			"seed": 71001,
+			"survival_seconds": 601.584569666667,
+			"upgrades": [
+				"ember_bolt"
+			],
+			"victory": true
+		},
+		{
+			"ability_activations": {
+				"blood_orbit": 343,
+				"core_pulse": 500,
+				"ember_bolt": 547
+			},
+			"ability_damage": {
+				"blood_orbit": 5824,
+				"core_pulse": 46520,
+				"ember_bolt": 2596
+			},
+			"core_health_ratio": 0.993815571507454,
+			"demon_health_ratio": 0.96616,
+			"demon_id": "demon_bulwark",
+			"evolutions": [
+				"inferno_bolt",
+				"inferno_bolt",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"inferno_bolt",
+				"inferno_bolt",
+				"inferno_bolt",
+				"cataclysm_pulse"
+			],
+			"first_level_seconds": 52.5738133333332,
+			"kills": 1624,
+			"kills_per_minute": 162.363572830416,
+			"level": 26,
+			"reward_shards": 211,
+			"runtime_errors": [],
+			"seed": 71001,
+			"survival_seconds": 600.134613333333,
+			"upgrades": [
+				"ember_bolt",
+				"emberheart",
+				"ember_bolt",
+				"blood_orbit",
+				"blood_orbit",
+				"core_pulse",
+				"ember_bolt",
+				"ember_bolt",
+				"ember_bolt",
+				"core_pulse",
+				"inferno_bolt",
+				"core_pulse",
+				"core_pulse",
+				"blood_orbit",
+				"inferno_bolt",
+				"blood_orbit",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"cataclysm_pulse",
+				"inferno_bolt",
+				"inferno_bolt",
+				"inferno_bolt",
+				"emberheart",
+				"cataclysm_pulse"
+			],
+			"victory": true
+		},
+		{
+			"ability_activations": {
+				"blood_orbit": 137,
+				"ember_bolt": 310
+			},
+			"ability_damage": {
+				"blood_orbit": 1096,
+				"ember_bolt": 864
+			},
+			"core_health_ratio": 0.906333333333333,
+			"demon_health_ratio": 0.92608,
+			"demon_id": "demon_harbinger",
+			"evolutions": [],
+			"first_level_seconds": 281.02714,
+			"kills": 60,
+			"kills_per_minute": 5.96988055960466,
+			"level": 3,
+			"reward_shards": 55,
+			"runtime_errors": [],
+			"seed": 71001,
+			"survival_seconds": 603.02714,
+			"upgrades": [
+				"ember_bolt",
+				"emberheart"
+			],
+			"victory": true
+		}
+	],
+	"selected_summary": {
+		"demons": {
+			"demon_bulwark": {
+				"median_core_health_ratio": 0.993815571507454,
+				"median_demon_health_ratio": 0.96616,
+				"median_first_level_seconds": 52.5738133333332,
+				"median_kills_per_minute": 162.363572830416,
+				"median_level": 26.0,
+				"median_survival_seconds": 600.134613333333,
+				"role_metrics": {
+					"close_damage_proxy": 5824,
+					"core_defense_proxy": 0.993815571507454,
+					"unique_abilities": 3
+				},
+				"runs": 1,
+				"total_ability_activations": 1390,
+				"total_ability_damage": 54940,
+				"victory_rate": 1.0,
+				"weighted_score": 99.5744424615007,
+				"wins": 1,
+				"worst_survival_seconds": 600.134613333333
+			},
+			"demon_harbinger": {
+				"median_core_health_ratio": 0.906333333333333,
+				"median_demon_health_ratio": 0.92608,
+				"median_first_level_seconds": 281.02714,
+				"median_kills_per_minute": 5.96988055960466,
+				"median_level": 3.0,
+				"median_survival_seconds": 603.02714,
+				"role_metrics": {
+					"close_damage_proxy": 1096,
+					"core_defense_proxy": 0.906333333333333,
+					"unique_abilities": 2
+				},
+				"runs": 1,
+				"total_ability_activations": 447,
+				"total_ability_damage": 1960,
+				"victory_rate": 1.0,
+				"weighted_score": 93.7339308333333,
+				"wins": 1,
+				"worst_survival_seconds": 603.02714
+			},
+			"demon_summoner": {
+				"median_core_health_ratio": 0.69595567867036,
+				"median_demon_health_ratio": 0.91996,
+				"median_first_level_seconds": 138.125769666667,
+				"median_kills_per_minute": 3.98946402719375,
+				"median_level": 2.0,
+				"median_survival_seconds": 601.584569666667,
+				"role_metrics": {
+					"close_damage_proxy": 0,
+					"core_defense_proxy": 0.69595567867036,
+					"unique_abilities": 1
+				},
+				"runs": 1,
+				"total_ability_activations": 599,
+				"total_ability_damage": 1368,
+				"victory_rate": 1.0,
+				"weighted_score": 90.2185589161665,
+				"wins": 1,
+				"worst_survival_seconds": 601.584569666667
+			}
+		},
+		"ranking": [
+			{
+				"demon_id": "demon_bulwark",
+				"weighted_score": 99.5744424615007
+			},
+			{
+				"demon_id": "demon_harbinger",
+				"weighted_score": 93.7339308333333
+			},
+			{
+				"demon_id": "demon_summoner",
+				"weighted_score": 90.2185589161665
+			}
+		],
+		"score_spread": 9.35588354533417,
+		"strongest": "demon_bulwark",
+		"weakest": "demon_summoner"
+	},
+	"tuning": {
+		"applied": false,
+		"candidates_evaluated": 0,
+		"iterations": 0
+	},
+	"verdict": "BALANCED: demon_bulwark strongest, demon_summoner weakest; hybrid gates pass"
+}
