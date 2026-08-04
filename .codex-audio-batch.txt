@@ -1,0 +1,44 @@
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Epic Stock Media - Elemental Mutation Whooshes and Impacts/FIREWhsh_Whoosh Fire Deep Growl Monster Saturated Crisp 03_ESM_EMWI.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_ember_bolt.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Hack and Slash Melee Combat Preview/Blade Swing Noise Slice 02.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_blood_orbit.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Arcane Activations Preview/AUDIO/Activate Glyph Forcefield.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_core_pulse.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Hack and Slash Melee Combat Preview/Blade Recall Magic 02.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_soul_drain_impact.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Sci Fi Warp Speed Preview/Empty Void Suction Riser_02.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_soul_drain_start.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle1of5/344 Audio - Historical Weapons Vol. 2/WEAPBlnt_Spear And Stick Impact, Wooden MKH 2_344 Audio_Medieval Weapons Vol 2.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_bone_spear.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/David Dumais Audio - Melee Weapons Sound Effects Pack 2/WEAPWhip_WHIP Snap Crack 05_DDUMAIS_MWP2.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_chain_lash.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle5of5/SoundBits - Vox Bestiae - Source Elements/CREAInsc_Insectoid Creature Tremble Attack Long 1_SNDBTS_VB-SE.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_imp_swarm.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/CB_Sounddesign - Applicable Sounds - Organic UI and Building Games SFX/GAMEMisc_Magic Creation 23_CB Sounddesign_APPlicable Sounds.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_magic_creation.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Epic Stock Media - Humanoid Creatures Vol 4 - Monstrous and Undead Creature Vocalization Sound Sets/CREAHmn_Designed Orc Male Attack Long Heavy Hit Charged Up 03_ESM_HC4.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_enemy_attack.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Hit and Punch Preview/AUDIO/HIT_SHORT_04.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_enemy_hit.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Hit and Punch Preview/AUDIO/PUNCH_ELECTRIC_HEAVY_02.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_demon_hit.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Epic Stock Media - Elemental Mutation Whooshes and Impacts/ELECMisc_Impact Electric Tonal Deep Movement Motion Hiss Glitch 01_ESM_EMWI.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_core_hit.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Epic Stock Media - Anime Game/EXPLDsgn_Explosion Small Blast Enemy Death Crunchy Boom Cartoon Noisy Crash Impact Delay 03_ESM_AG.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_enemy_death.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Epic Stock Media - Humanoid Creatures Vol 4 - Monstrous and Undead Creature Vocalization Sound Sets/CREAMnstr_Designed Sea Beast Creature Pain Intense Yell Long 04_ESM_HC4.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_demon_pain.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Epic Stock Media - Humanoid Creatures Vol 4 - Monstrous and Undead Creature Vocalization Sound Sets/VOXReac_Construction Kit Male Flutter Death Vocal Stuttered Long 05_ESM_HC4.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_demon_death.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/The Mint – Coins and Money Preview/AUDIO/Coin Flung.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_xp_pickup.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Cinematic Sound Design - UI Interaction Elements/Ting Coins.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_shard_reward.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/The Mint – Coins and Money Preview/AUDIO/Coins In Sack Dropped on Wood.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_shard_reward_heavy.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Epic Stock Media - Anime Game/DSGNStngr_Power Up Bright Positive Successful Light Saturation Crash Shimmer 05_ESM_AG.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/sfx_level_up.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Future UI Preview/Audio/FUI Holographic Button Press-1.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ui_button.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Future UI Preview/Audio/FUI Navigation Tone Stereo Flutter.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ui_navigation.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Cinematic Sound Design - UI Interaction Elements/Accept Boing Crunch.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ui_accept.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Cinematic Sound Design - UI Interaction Elements/Deny Muted.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ui_deny.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Future UI Preview/Audio/Error Triplet-5.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ui_error.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle2of5/Cinematic Sound Design - Hybrid Game & UI Elements/Game Entry Happy Short.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ui_game_entry.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Dystopia – Ambience and Drone Preview/AUDIO/SUB_DROP_DEEP.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/result_sub_drop.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle3of5/Jake Fielding - Cinematic Horn Braams/DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-32.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/result_victory.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle3of5/Jake Fielding - Cinematic Horn Braams/DSGNBram____Cinematic Horn Braam, Epic, Cinematic, Dark, Instrument, Huge-67.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/result_defeat.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle1of5/344 Audio - Ghostly Presences Vol. 1/AMBDsgn_Evil Spell Ambience_344 Audio_Ghostly Presences.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ambience_evil_spell.wav
+/Users/evananderson/Documents/game-assets/audio/Sonniss.com-GDC2026-GameAudioBundle1of5/344 Audio - Haunting Ambiences Vol. 5/FIRECrkl_Fire Crackling, Popping, Witch's Cauldron_344 Audio_Haunting Ambiences Vol 5.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ambience_hellfire.wav
+/Users/evananderson/Documents/game-assets/audio/Shapeforms Audio Free Sound Effects/Dystopia – Ambience and Drone Preview/AUDIO/AMBIENCE_HEARTBEAT_LOOP.wav	/Users/evananderson/Documents/Swarm-dev/processed_audio/ambience_heartbeat.wav
+<CONFIG
+SRATE 48000
+NCH 2
+TRIM_START 0.1
+TRIM_END 0.1
+PAD_START 0.005
+PAD_END 0.03
+PAD_OUTSIDE_TRIM 3
+NORMALIZE 1 -6.0 1
+BRICKWALL 1 -1.0
+FADE 0.005 0.05 1 1 0
+>
